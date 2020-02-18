@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Agrosup_app</string>
+    <string name="login_loginTV">Zaloguj się</string>
+    <string name="login_submitBTN">Zaloguj</string>
+    <string name="login_emailHint">e-mail</string>
+    <string name="login_passwordHint">password</string>
+</resources>

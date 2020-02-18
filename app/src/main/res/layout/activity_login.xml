@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".LoginActivity">
+
+    <TextView
+        android:id="@+id/login_loginTV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="100sp"
+        android:gravity="center_horizontal"
+        android:text="@string/login_loginTV"
+        android:textSize="36sp" />
+
+    <EditText
+        android:id="@+id/login_emailET"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|center_horizontal"
+        android:width="300sp"
+        android:autofillHints=""
+        android:ems="10"
+        android:hint="@string/login_emailHint"
+        android:inputType="textEmailAddress" />
+
+    <EditText
+        android:id="@+id/login_passwordET"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:width="300sp"
+        android:ems="10"
+        android:hint="@string/login_passwordHint"
+        android:inputType="textPassword" />
+
+    <Button
+        android:id="@+id/login_submitBTN"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:width="100sp"
+        android:text="@string/login_submitBTN" />
+</LinearLayout>
