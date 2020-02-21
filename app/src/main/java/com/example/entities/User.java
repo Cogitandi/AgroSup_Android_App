@@ -6,23 +6,24 @@ import androidx.room.PrimaryKey;
 
 @Entity
 public class User {
-    @PrimaryKey
-    public int uid;
 
-    public User(int uid, String email) {
-        this.uid = uid;
+    @PrimaryKey
+    private int id;
+
+    @ColumnInfo(name = "email")
+    private String email;
+
+    public User(int id, String email) {
+        this.id = id;
         this.email = email;
     }
 
-    public int getUid() {
-        return uid;
+    public int getId() {
+        return id;
     }
 
     public String getEmail() {
         return email;
     }
-
-    @ColumnInfo(name = "email")
-    public String email;
 
 }
