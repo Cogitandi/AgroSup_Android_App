@@ -2,7 +2,7 @@ package com.example.apiModels;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Field {
+public class FieldApi {
     @SerializedName("id")
     private Integer id;
 

@@ -2,7 +2,7 @@ package com.example.apiModels;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Operator {
+public class OperatorApi {
     @SerializedName("id")
     private Integer id;
     @SerializedName("firstName")

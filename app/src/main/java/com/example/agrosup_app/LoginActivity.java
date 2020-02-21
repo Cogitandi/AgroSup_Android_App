@@ -1,5 +1,6 @@
 package com.example.agrosup_app;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,15 +10,18 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import com.example.api.GetData;
 import com.example.api.LoginCredentials;
 import com.example.api.RetrofitClient;
-import com.example.apiModels.Field;
-import com.example.apiModels.Operator;
-import com.example.apiModels.Parcel;
-import com.example.apiModels.User;
-import com.example.apiModels.YearPlan;
+import com.example.apiModels.FieldApi;
+import com.example.apiModels.OperatorApi;
+import com.example.apiModels.ParcelApi;
+import com.example.apiModels.UserApi;
+import com.example.apiModels.YearPlanApi;
+import com.example.database.AppDatabase;
+import com.example.entities.User;
 
 import java.util.List;
 
@@ -33,12 +37,13 @@ public class LoginActivity extends AppCompatActivity {
     private static String token;
     GetData service;
 
-    User user;
-    List<YearPlan> yearPlans;
-    List<Operator> operators;
-    List<Field> fields;
-    List<Parcel> parcels;
+    UserApi userApi;
+    List<YearPlanApi> yearPlanApis;
+    List<OperatorApi> operatorApis;
+    List<FieldApi> fieldApis;
+    List<ParcelApi> parcelApis;
 
+    AppDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +51,6 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         initialize();
         onClickListeners();
-        service = RetrofitClient.getRetrofitInstance().create(GetData.class);
-
     }
 
     @Override
@@ -60,6 +63,9 @@ public class LoginActivity extends AppCompatActivity {
         emailET = findViewById(R.id.login_emailET);
         passwordET = findViewById(R.id.login_passwordET);
         submitBTN = findViewById(R.id.login_submitBTN);
+        //db = Room.databaseBuilder(getApplicationContext(),AppDatabase.class, "agroSupDB").build();
+        db = AppDatabase.getInstance(getApplicationContext());
+        service = RetrofitClient.getRetrofitInstance().create(GetData.class);
     }
 
     protected void onClickListeners() {
@@ -67,129 +73,144 @@ public class LoginActivity extends AppCompatActivity {
             String email = emailET.getText().toString();
             String password = passwordET.getText().toString();
             getToken("a@b.pl", "ziomek");
-
         });
     }
 
     protected void getToken(String email, String password) {
         LoginCredentials login = new LoginCredentials("a@b.pl", "ziomek");
-        Call<User> call = service.getToken(login);
-        call.enqueue(new Callback<User>() {
+        Call<UserApi> call = service.getToken(login);
+        call.enqueue(new Callback<UserApi>() {
             @Override
-            public void onResponse(Call<User> call, Response<User> response) {
+            public void onResponse(Call<UserApi> call, Response<UserApi> response) {
                 if (response.isSuccessful()) {
                     token = "bearer " + response.body().getToken();
-                    getUser(token);
-                    getOperators(token, 2);
+                    getUserApi(token);
+                    //getOperatorsApi(token, 2);
 
                 } else {
-                    Toast.makeText(LoginActivity.this, getString(R.string.sync_errorToken), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, getString(R.string.sync_errorTokenApi), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                Toast.makeText(LoginActivity.this, getString(R.string.sync_errorUser), Toast.LENGTH_SHORT).show();
+            public void onFailure(Call<UserApi> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, getString(R.string.sync_errorUserApi), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    protected User getUser(String token) {
-        Call<List<User>> getUser = service.getUser(token);
-        getUser.enqueue(new Callback<List<User>>() {
+    protected void getUserApi(String token) {
+        Call<List<UserApi>> getUserApi = service.getUser(token);
+        getUserApi.enqueue(new Callback<List<UserApi>>() {
             @Override
-            public void onResponse(Call<List<User>> call, Response<List<User>> response) {
+            public void onResponse(Call<List<UserApi>> call, Response<List<UserApi>> response) {
                 if (response.isSuccessful()) {
-                    List<User> userList = response.body();
-                    for (User item : userList) {
-                        user = item;
+                    Log.d("nowy","sensowna");
+                    List<UserApi> userApiList = response.body();
+                    for (UserApi item : userApiList) {
+                        userApi = item;
+                        User user = new User(userApi.getId(), userApi.getEmail());
+                        Thread thread = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                db.runInTransaction(() -> {
+                                    Log.d("nowy","weszedl");
+                                    db.userDao().insertAll(user);
+                                    if (db.userDao().getAll().size() != 0)
+                                        Log.d("nowy",db.userDao().getAll().get(0).getUid()+"");
+                                        //Toast.makeText(LoginActivity.this, "z bazy:" + db.userDao().getAll().get(0).getUid(), Toast.LENGTH_SHORT).show();
+                                });
+                            }
+                        });
+                        thread.start();
+
+
                     }
                 } else {
-                    Toast.makeText(LoginActivity.this, getString(R.string.sync_errorUser), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, getString(R.string.sync_errorUserApi), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<List<User>> call, Throwable t) {
-                Toast.makeText(LoginActivity.this, getString(R.string.sync_errorServer), Toast.LENGTH_SHORT).show();
-            }
-        });
-    return user;
-    }
-
-    protected void getYearPlans(String token) {
-        Call<List<YearPlan>> getYearPlans = service.getYearPlans(token);
-
-        getYearPlans.enqueue(new Callback<List<YearPlan>>() {
-            @Override
-            public void onResponse(Call<List<YearPlan>> call, Response<List<YearPlan>> response) {
-                if (response.isSuccessful()) {
-                    yearPlans = response.body();
-                } else {
-                    Toast.makeText(LoginActivity.this, getString(R.string.sync_errorYearPlan), Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<YearPlan>> call, Throwable t) {
-                Toast.makeText(LoginActivity.this, getString(R.string.sync_errorServer), Toast.LENGTH_SHORT).show();
+            public void onFailure(Call<List<UserApi>> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, getString(R.string.sync_errorServerApi), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    protected void getOperators(String token, Integer yearPlanId) {
-        Call<List<Operator>> getOperators = service.getOperators(token, yearPlanId);
-        getOperators.enqueue(new Callback<List<Operator>>() {
+    protected void getYearPlansApi(String token) {
+        Call<List<YearPlanApi>> getYearPlanApis = service.getYearPlans(token);
+
+        getYearPlanApis.enqueue(new Callback<List<YearPlanApi>>() {
             @Override
-            public void onResponse(Call<List<Operator>> call, Response<List<Operator>> response) {
+            public void onResponse(Call<List<YearPlanApi>> call, Response<List<YearPlanApi>> response) {
                 if (response.isSuccessful()) {
-                    operators = response.body();
+                    yearPlanApis = response.body();
                 } else {
-                    Toast.makeText(LoginActivity.this, getString(R.string.sync_errorOperator), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, getString(R.string.sync_errorYearPlanApi), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<List<Operator>> call, Throwable t) {
-                Toast.makeText(LoginActivity.this, getString(R.string.sync_errorServer), Toast.LENGTH_SHORT).show();
+            public void onFailure(Call<List<YearPlanApi>> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, getString(R.string.sync_errorServerApi), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    protected void getFields(String token, Integer yearPlanId) {
-        Call<List<Field>> getFields = service.getFields(token, yearPlanId);
-        getFields.enqueue(new Callback<List<Field>>() {
+    protected void getOperatorsApi(String token, Integer YearPlanApiId) {
+        Call<List<OperatorApi>> getOperatorApis = service.getOperators(token, YearPlanApiId);
+        getOperatorApis.enqueue(new Callback<List<OperatorApi>>() {
             @Override
-            public void onResponse(Call<List<Field>> call, Response<List<Field>> response) {
+            public void onResponse(Call<List<OperatorApi>> call, Response<List<OperatorApi>> response) {
                 if (response.isSuccessful()) {
-                    fields = response.body();
+                    operatorApis = response.body();
                 } else {
-                    Toast.makeText(LoginActivity.this, getString(R.string.sync_errorField), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, getString(R.string.sync_errorOperatorApi), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<List<Field>> call, Throwable t) {
-                Toast.makeText(LoginActivity.this, getString(R.string.sync_errorServer), Toast.LENGTH_SHORT).show();
+            public void onFailure(Call<List<OperatorApi>> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, getString(R.string.sync_errorServerApi), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    protected void getParcels(String token, Integer yearPlanId) {
-        Call<List<Parcel>> getParcels = service.getParcels(token, yearPlanId);
-        getParcels.enqueue(new Callback<List<Parcel>>() {
+    protected void getFieldsApi(String token, Integer YearPlanApiId) {
+        Call<List<FieldApi>> getFieldApis = service.getFields(token, YearPlanApiId);
+        getFieldApis.enqueue(new Callback<List<FieldApi>>() {
             @Override
-            public void onResponse(Call<List<Parcel>> call, Response<List<Parcel>> response) {
+            public void onResponse(Call<List<FieldApi>> call, Response<List<FieldApi>> response) {
                 if (response.isSuccessful()) {
-                    parcels = response.body();
+                    fieldApis = response.body();
                 } else {
-                    Toast.makeText(LoginActivity.this, getString(R.string.sync_errorParcel), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, getString(R.string.sync_errorFieldApi), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<List<Parcel>> call, Throwable t) {
-                Toast.makeText(LoginActivity.this, getString(R.string.sync_errorServer), Toast.LENGTH_SHORT).show();
+            public void onFailure(Call<List<FieldApi>> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, getString(R.string.sync_errorServerApi), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    protected void getParcelsApi(String token, Integer YearPlanApiId) {
+        Call<List<ParcelApi>> getParcelApis = service.getParcels(token, YearPlanApiId);
+        getParcelApis.enqueue(new Callback<List<ParcelApi>>() {
+            @Override
+            public void onResponse(Call<List<ParcelApi>> call, Response<List<ParcelApi>> response) {
+                if (response.isSuccessful()) {
+                    parcelApis = response.body();
+                } else {
+                    Toast.makeText(LoginActivity.this, getString(R.string.sync_errorParcelApi), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<ParcelApi>> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, getString(R.string.sync_errorServerApi), Toast.LENGTH_SHORT).show();
             }
         });
     }

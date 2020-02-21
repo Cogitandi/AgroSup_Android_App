@@ -1,10 +1,10 @@
 package com.example.api;
 
-import com.example.apiModels.Field;
-import com.example.apiModels.Operator;
-import com.example.apiModels.Parcel;
-import com.example.apiModels.User;
-import com.example.apiModels.YearPlan;
+import com.example.apiModels.FieldApi;
+import com.example.apiModels.OperatorApi;
+import com.example.apiModels.ParcelApi;
+import com.example.apiModels.UserApi;
+import com.example.apiModels.YearPlanApi;
 
 import java.util.List;
 
@@ -23,21 +23,21 @@ public interface GetData {
             "content-type: application/json",
     })
     @POST("authentication_token")
-    Call<User> getToken(@Body LoginCredentials login);
+    Call<UserApi> getToken(@Body LoginCredentials login);
 
     @GET("users.json")
-    Call<List<User>> getUser(@Header("authorization") String token);
+    Call<List<UserApi>> getUser(@Header("authorization") String token);
 
     @GET("yearplans.json")
-    Call<List<YearPlan>> getYearPlans(@Header("authorization") String token);
+    Call<List<YearPlanApi>> getYearPlans(@Header("authorization") String token);
 
     @GET("fields.json")
-    Call<List<Field>> getFields(@Header("authorization") String token,@Query("yearPlan") Integer id);
+    Call<List<FieldApi>> getFields(@Header("authorization") String token, @Query("yearPlan") Integer id);
 
     @GET("operators.json")
-    Call<List<Operator>> getOperators(@Header("authorization") String token,@Query("yearPlan") Integer id);
+    Call<List<OperatorApi>> getOperators(@Header("authorization") String token, @Query("yearPlan") Integer id);
 
     @GET("parcels.json")
-    Call<List<Parcel>> getParcels(@Header("authorization") String token,@Query("yearPlan") Integer id);
+    Call<List<ParcelApi>> getParcels(@Header("authorization") String token, @Query("yearPlan") Integer id);
 
 }

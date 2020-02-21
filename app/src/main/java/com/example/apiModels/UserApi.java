@@ -2,7 +2,7 @@ package com.example.apiModels;
 
 import com.google.gson.annotations.SerializedName;
 
-public class User {
+public class UserApi {
 
     //Give the field a custom name//
 

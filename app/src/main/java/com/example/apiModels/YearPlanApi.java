@@ -2,7 +2,7 @@ package com.example.apiModels;
 
 import com.google.gson.annotations.SerializedName;
 
-public class YearPlan {
+public class YearPlanApi {
 
     @SerializedName("id")
     private Integer id;

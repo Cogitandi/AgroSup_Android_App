@@ -4,11 +4,11 @@
     <string name="login_submitBTN">Zaloguj</string>
     <string name="login_emailHint">e-mail</string>
     <string name="login_passwordHint">password</string>
-    <string name="sync_errorServer">Błąd połączenia z serwerem</string>
-    <string name="sync_errorOperator">Błąd wczytywania(operator)</string>
-    <string name="sync_errorYearPlan">Błąd wczytywania(yearPlan)</string>
-    <string name="sync_errorField">Błąd wczytywania(field)</string>
-    <string name="sync_errorParcel">Błąd wczytywania(parcel)</string>
-    <string name="sync_errorUser">Błąd wczytywania(user)</string>
-    <string name="sync_errorToken">Błąd wczytywania(token)</string>
+    <string name="sync_errorServerApi">Błąd połączenia z serwerem</string>
+    <string name="sync_errorOperatorApi">Błąd wczytywania(operator)</string>
+    <string name="sync_errorYearPlanApi">Błąd wczytywania(yearPlan)</string>
+    <string name="sync_errorFieldApi">Błąd wczytywania(field)</string>
+    <string name="sync_errorParcelApi">Błąd wczytywania(parcel)</string>
+    <string name="sync_errorUserApi">Błąd wczytywania(user)</string>
+    <string name="sync_errorTokenApi">Błąd wczytywania(token)</string>
 </resources>
