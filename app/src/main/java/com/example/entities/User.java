@@ -19,8 +19,8 @@ public class User {
     @ColumnInfo(name = "logged")
     private boolean logged;
 
-    @ColumnInfo(name = "sensorDistance")
-    private int sensorDistance;
+    @ColumnInfo(name = "amountImpuls")
+    private int amountImpuls;
 
     @ColumnInfo(name = "selectedYearPlan")
     private int selectedYearPlanId;
@@ -60,12 +60,12 @@ public class User {
         this.logged = logged;
     }
 
-    public int getSensorDistance() {
-        return sensorDistance;
+    public int getAmountImpuls() {
+        return amountImpuls;
     }
 
-    public void setSensorDistance(int sensorDistance) {
-        this.sensorDistance = sensorDistance;
+    public void setAmountImpuls(int amountImpuls) {
+        this.amountImpuls = amountImpuls;
     }
 
     public int getSelectedYearPlanId() {

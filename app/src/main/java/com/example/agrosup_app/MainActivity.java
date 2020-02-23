@@ -68,6 +68,10 @@ public class MainActivity extends AppCompatActivity {
             });
             thread.start();
         });
+        settingsBTN.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplication(), SettingsActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void sendMessage(int id) {

@@ -1,11 +1,13 @@
 <resources>
     <string name="app_name">Agrosup_app</string>
+
     <string name="login_loginTV">Zaloguj się</string>
     <string name="login_submitBTN">Zaloguj</string>
     <string name="login_emailHint">e-mail</string>
     <string name="login_passwordHint">password</string>
     <string name="login_incorrectCredentials">Nieprawidłowe dane</string>
     <string name="login_successfullSynchronization">Zalogowano pomyślnie</string>
+
     <string name="sync_errorServerApi">Błąd połączenia z serwerem</string>
     <string name="sync_errorOperatorApi">Błąd wczytywania(operator)</string>
     <string name="sync_errorYearPlanApi">Błąd wczytywania(yearPlan)</string>
@@ -17,4 +19,12 @@
     <string name="main_logoTV">AgroSup</string>
     <string name="main_settingsBTN">Ustawienia</string>
     <string name="main_logoutBTN">Wyloguj</string>
+
+    <string name="settings_yearPlanTV">Plan:</string>
+    <string name="settings_operatorTV">Operator:</string>
+    <string name="settings_impulsTV">Ilość impulsów:</string>
+    <string name="settings_saveBTN">Zapisz</string>
+    <string name="settings_savedToast">Zapisano</string>
+
+
 </resources>

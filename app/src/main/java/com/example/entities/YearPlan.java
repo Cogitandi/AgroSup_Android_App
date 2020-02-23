@@ -1,5 +1,6 @@
 package com.example.entities;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -56,5 +57,11 @@ public class YearPlan {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return startYear+"/"+endYear;
     }
 }
