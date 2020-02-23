@@ -1,5 +1,6 @@
 package com.example.agrosup_app;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,6 +22,7 @@ import com.example.database.UserWithYearPlans;
 import com.example.entities.Field;
 import com.example.entities.Operator;
 import com.example.entities.Parcel;
+import com.example.entities.User;
 import com.example.entities.YearPlan;
 
 public class LoginActivity extends AppCompatActivity {
@@ -32,6 +34,7 @@ public class LoginActivity extends AppCompatActivity {
     AppDatabase db;
     Handler handler;
     ProgressBar loadingBar;
+    String email;
 
     // msg codes
     // 1 - successfull synchronization
@@ -80,8 +83,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private void onClickListeners() {
         submitBTN.setOnClickListener((View v) -> {
-            String email = emailET.getText().toString();
+            email = emailET.getText().toString();
             String password = passwordET.getText().toString();
+
 
             emailET.setVisibility(View.GONE);
             passwordET.setVisibility(View.GONE);
@@ -123,7 +127,10 @@ public class LoginActivity extends AppCompatActivity {
 
     private void successSynchronization() {
         printDB();
+        makeLogged("a@b.pl");
         Toast.makeText(getApplication(), getString(R.string.login_successfullSynchronization), Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(getApplication(), MainActivity.class);
+        startActivity(intent);
         this.finish();
     }
 
@@ -138,5 +145,17 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(getApplication(), getString(R.string.login_incorrectCredentials), Toast.LENGTH_SHORT).show();
     }
 
+    private void makeLogged(String email) {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                User user = db.userDao().findByName(email);
+                user.setLogged(true);
+                db.userDao().updateUsers(user);
+            }
+        });
+        thread.start();
+    }
 
 }

@@ -13,4 +13,8 @@
     <string name="sync_errorParcelApi">Błąd wczytywania(parcel)</string>
     <string name="sync_errorUserApi">Błąd wczytywania(user)</string>
     <string name="sync_errorTokenApi">Błąd wczytywania(token)</string>
+
+    <string name="main_logoTV">AgroSup</string>
+    <string name="main_settingsBTN">Ustawienia</string>
+    <string name="main_logoutBTN">Wyloguj</string>
 </resources>

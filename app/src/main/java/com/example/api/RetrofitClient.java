@@ -19,7 +19,7 @@ public class RetrofitClient {
 
     //Define the base URL//
 
-    private static final String BASE_URL = "https://192.168.1.12:8000/api/";
+    private static final String BASE_URL = "https://192.168.43.163:8000/api/";
 
     //Create the Retrofit instance//
 

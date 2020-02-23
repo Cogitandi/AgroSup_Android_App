@@ -21,6 +21,8 @@ import com.example.entities.Parcel;
 import com.example.entities.User;
 import com.example.entities.YearPlan;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,23 +32,24 @@ import retrofit2.Response;
 
 public class Synchronizer {
 
-    GetData service;
-    Activity activity;
-    String token;
-    AppDatabase db;
-    int userId;
+    private GetData service;
+    private Activity activity;
+    private String token;
+    private AppDatabase db;
+    private int userId;
 
-    List<YearPlan> yearPlans;
+    private List<YearPlan> yearPlans;
 
-    Handler handler;
-    Handler thisHandler;
+    private Handler handler;
+    private Handler thisHandler;
 
-    int sendRequest = 0;
-    int receivedRequest = 0;
+    private int sendRequest = 0;
+    private int receivedRequest = 0;
 
-    int currentYearPlanId;
-    int lastYearPlanId;
-    boolean error = false;
+    private int currentYearPlanId;
+    private int lastYearPlanId;
+    private boolean error = false;
+    private LoginCredentials login;
 
 
     // msg
@@ -106,14 +109,16 @@ public class Synchronizer {
     }
 
     private void getToken(String email, String password) {
-        LoginCredentials login = new LoginCredentials("a@b.pl", "ziomek");
+        login = new LoginCredentials(email, password);
         Call<UserApi> call = service.getToken(login);
         call.enqueue(new Callback<UserApi>() {
             @Override
-            public void onResponse(Call<UserApi> call, Response<UserApi> response) {
+            public void onResponse(@NotNull Call<UserApi> call, @NotNull Response<UserApi> response) {
                 if (response.isSuccessful()) {
-                    token = "bearer " + response.body().getToken();
-                    getUserApi();
+                    if (response.body() != null) {
+                        token = "bearer " + response.body().getToken();
+                        getUserApi();
+                    }
                 } else {
                     sendMessageSync(7);
                     Toast.makeText(activity, activity.getString(R.string.sync_errorTokenApi), Toast.LENGTH_SHORT).show();
@@ -121,11 +126,238 @@ public class Synchronizer {
             }
 
             @Override
-            public void onFailure(Call<UserApi> call, Throwable t) {
+            public void onFailure(@NotNull Call<UserApi> call, @NotNull Throwable t) {
                 sendMessageSync(6);
                 Toast.makeText(activity, activity.getString(R.string.sync_errorServerApi), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void getUserApi() {
+        Call<List<UserApi>> getUserApi = service.getUser(token);
+        getUserApi.enqueue(new Callback<List<UserApi>>() {
+            @Override
+            public void onResponse(@NotNull Call<List<UserApi>> call, @NotNull Response<List<UserApi>> response) {
+                if (response.isSuccessful()) {
+                    List<UserApi> userApiList = response.body();
+                    if (userApiList != null) {
+                        for (UserApi item : userApiList) {
+                            synchronize(item);
+                        }
+                    }
+                } else {
+                    sendMessageSync(6);
+                    Toast.makeText(activity, activity.getString(R.string.sync_errorUserApi), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<List<UserApi>> call, @NotNull Throwable t) {
+                Log.d("error:1 ", t.toString());
+                Toast.makeText(activity, activity.getString(R.string.sync_errorServerApi), Toast.LENGTH_SHORT).show();
+                sendMessageSync(6);
+            }
+        });
+    }
+
+    private void getYearPlansApi() {
+        Call<List<YearPlanApi>> getYearPlanApis = service.getYearPlans(token);
+
+        getYearPlanApis.enqueue(new Callback<List<YearPlanApi>>() {
+            @Override
+            public void onResponse(@NotNull Call<List<YearPlanApi>> call, @NotNull Response<List<YearPlanApi>> response) {
+                if (response.isSuccessful()) {
+                    List<YearPlanApi> yearPlansApi = response.body();
+                    synchronizeYearPlans(yearPlansApi);
+                } else {
+                    Toast.makeText(activity, activity.getString(R.string.sync_errorYearPlanApi), Toast.LENGTH_SHORT).show();
+                    sendMessageSync(6);
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<List<YearPlanApi>> call, @NotNull Throwable t) {
+                Log.d("error: 2", t.toString());
+                Toast.makeText(activity, activity.getString(R.string.sync_errorServerApi), Toast.LENGTH_SHORT).show();
+                sendMessageSync(6);
+            }
+        });
+    }
+
+    private void getOperatorsApi(int yearPlanApiId) {
+        Call<List<OperatorApi>> getOperatorApis = service.getOperators(token, yearPlanApiId);
+        getOperatorApis.enqueue(new Callback<List<OperatorApi>>() {
+            @Override
+            public void onResponse(@NotNull Call<List<OperatorApi>> call, @NotNull Response<List<OperatorApi>> response) {
+                if (response.isSuccessful()) {
+                    List<OperatorApi> operatorApis = response.body();
+                    synchronizeOperators(operatorApis, yearPlanApiId);
+                } else {
+                    Toast.makeText(activity, activity.getString(R.string.sync_errorOperatorApi), Toast.LENGTH_SHORT).show();
+                    sendMessageSync(6);
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<List<OperatorApi>> call, @NotNull Throwable t) {
+                Log.d("error: 3", t.toString());
+                Toast.makeText(activity, activity.getString(R.string.sync_errorServerApi), Toast.LENGTH_SHORT).show();
+                sendMessageSync(6);
+            }
+        });
+    }
+
+    private void getFieldsApi(int yearPlanApiId) {
+        Call<List<FieldApi>> getFieldApis = service.getFields(token, yearPlanApiId);
+        getFieldApis.enqueue(new Callback<List<FieldApi>>() {
+            @Override
+            public void onResponse(@NotNull Call<List<FieldApi>> call, @NotNull Response<List<FieldApi>> response) {
+                if (response.isSuccessful()) {
+                    List<FieldApi> fieldsApi = response.body();
+                    synchronizeFields(fieldsApi, yearPlanApiId);
+                } else {
+                    Toast.makeText(activity, activity.getString(R.string.sync_errorFieldApi), Toast.LENGTH_SHORT).show();
+                    sendMessageSync(6);
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<List<FieldApi>> call, @NotNull Throwable t) {
+                Log.d("error: 4", t.toString());
+                Toast.makeText(activity, activity.getString(R.string.sync_errorServerApi), Toast.LENGTH_SHORT).show();
+                sendMessageSync(6);
+            }
+        });
+    }
+
+    private void getParcelsApi(Integer yearPlanApiId) {
+        Call<List<ParcelApi>> getParcelApis = service.getParcels(token, yearPlanApiId);
+        getParcelApis.enqueue(new Callback<List<ParcelApi>>() {
+            @Override
+            public void onResponse(@NotNull Call<List<ParcelApi>> call, @NotNull Response<List<ParcelApi>> response) {
+                if (response.isSuccessful()) {
+                    List<ParcelApi> parcelsApi = response.body();
+                    synchronizeParcels(parcelsApi, yearPlanApiId);
+                } else {
+                    Toast.makeText(activity, activity.getString(R.string.sync_errorParcelApi), Toast.LENGTH_SHORT).show();
+                    sendMessageSync(6);
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<List<ParcelApi>> call, @NotNull Throwable t) {
+                Log.d("error: 5", t.toString());
+                Toast.makeText(activity, activity.getString(R.string.sync_errorServerApi), Toast.LENGTH_SHORT).show();
+                sendMessageSync(6);
+            }
+        });
+    }
+
+    private User userApiToUser(UserApi userApi) {
+        return new User(userApi.getId(), userApi.getEmail(), login.getPassword());
+    }
+
+    private List<YearPlan> yearPlanApiToYearPlan(List<YearPlanApi> yearPlansApi, int userId) {
+        List<YearPlan> yearPlanList = new ArrayList<>();
+
+        for (YearPlanApi item : yearPlansApi) {
+            YearPlan yearPlan = new YearPlan(item.getId(), item.getStartYear(), item.getEndYear(), userId);
+            yearPlanList.add(yearPlan);
+        }
+
+        return yearPlanList;
+    }
+
+    private List<Operator> operatorsApiToOperators(List<OperatorApi> operatorsApi, int yearPlanId) {
+        List<Operator> operators = new ArrayList<>();
+
+        for (OperatorApi item : operatorsApi) {
+            Operator operator = new Operator(item.getId(), item.getFirstName(), item.getSurname(), yearPlanId);
+            operators.add(operator);
+        }
+
+        return operators;
+    }
+
+    private List<Field> fieldsApiToOperators(List<FieldApi> fieldsApi, int yearPlanId) {
+        List<Field> fields = new ArrayList<>();
+
+        for (FieldApi item : fieldsApi) {
+            Field field = new Field(item.getId(), item.getName(), yearPlanId);
+            fields.add(field);
+        }
+
+        return fields;
+    }
+
+    private List<Parcel> parcelsApiToOperators(List<ParcelApi> parcelsApi, int yearPlanId) {
+        List<Parcel> parcels = new ArrayList<>();
+
+        for (ParcelApi item : parcelsApi) {
+            Parcel parcel = new Parcel(item.getId(), item.getParcelNumber(), item.getCultivatedArea(), item.isFuelApplication(), item.getArimrOperatorId(), yearPlanId);
+            parcels.add(parcel);
+        }
+
+        return parcels;
+    }
+
+    private void synchronize(UserApi userApi) {
+        sendRequest++;
+        User user = userApiToUser(userApi);
+        userId = user.getId();
+
+        Thread thread = new Thread(() -> {
+            if (db.userDao().findByName(user.getEmail()) != null) { //check if exist
+                deleteOld(user);
+            } else {
+                db.userDao().insertAll(user);
+            }
+
+
+            sendMessageSync(1);
+        });
+        thread.start();
+    }
+
+    private void synchronizeYearPlans(List<YearPlanApi> yearPlansApi) {
+        sendRequest++;
+        yearPlans = yearPlanApiToYearPlan(yearPlansApi, userId);
+        Thread thread = new Thread(() -> {
+            db.yearPlanDao().insertAll(yearPlans.toArray(new YearPlan[0]));
+            sendMessageSync(2);
+        });
+        thread.start();
+    }
+
+    private void synchronizeOperators(List<OperatorApi> operatorsApi, int yearPlanId) {
+        sendRequest++;
+        List<Operator> operators = operatorsApiToOperators(operatorsApi, yearPlanId);
+        Thread thread = new Thread(() -> {
+            db.operatorDao().insertAll(operators.toArray(new Operator[0]));
+            sendMessageSync(3);
+        });
+        thread.start();
+    }
+
+    private void synchronizeFields(List<FieldApi> fieldsApi, int yearPlanId) {
+        sendRequest++;
+        List<Field> fields = fieldsApiToOperators(fieldsApi, yearPlanId);
+        Thread thread = new Thread(() -> {
+            db.fieldDao().insertAll(fields.toArray(new Field[0]));
+            sendMessageSync(4);
+        });
+        thread.start();
+    }
+
+    private void synchronizeParcels(List<ParcelApi> parcelsApi, int yearPlanId) {
+        sendRequest++;
+        currentYearPlanId = yearPlanId;
+        List<Parcel> parcels = parcelsApiToOperators(parcelsApi, yearPlanId);
+        Thread thread = new Thread(() -> {
+            db.parcelDao().insertAll(parcels.toArray(new Parcel[0]));
+            sendMessageSync(5);
+        });
+        thread.start();
     }
 
     private void sendMessageSync(int id) {
@@ -144,245 +376,6 @@ public class Synchronizer {
         getToken(email, password);
     }
 
-    private void getUserApi() {
-        Call<List<UserApi>> getUserApi = service.getUser(token);
-        getUserApi.enqueue(new Callback<List<UserApi>>() {
-            @Override
-            public void onResponse(Call<List<UserApi>> call, Response<List<UserApi>> response) {
-                if (response.isSuccessful()) {
-                    List<UserApi> userApiList = response.body();
-                    for (UserApi item : userApiList) {
-                        synchronize(item);
-                    }
-                } else {
-                    sendMessageSync(6);
-                    Toast.makeText(activity, activity.getString(R.string.sync_errorUserApi), Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<UserApi>> call, Throwable t) {
-                Log.d("error:1 ", t.toString());
-                Toast.makeText(activity, activity.getString(R.string.sync_errorServerApi), Toast.LENGTH_SHORT).show();
-                sendMessageSync(6);
-            }
-        });
-    }
-
-    private void getYearPlansApi() {
-        Call<List<YearPlanApi>> getYearPlanApis = service.getYearPlans(token);
-
-        getYearPlanApis.enqueue(new Callback<List<YearPlanApi>>() {
-            @Override
-            public void onResponse(Call<List<YearPlanApi>> call, Response<List<YearPlanApi>> response) {
-                if (response.isSuccessful()) {
-                    List<YearPlanApi> yearPlansApi = response.body();
-                    synchronizeYearPlans(yearPlansApi);
-                } else {
-                    Toast.makeText(activity, activity.getString(R.string.sync_errorYearPlanApi), Toast.LENGTH_SHORT).show();
-                    sendMessageSync(6);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<YearPlanApi>> call, Throwable t) {
-                Log.d("error: 2", t.toString());
-                Toast.makeText(activity, activity.getString(R.string.sync_errorServerApi), Toast.LENGTH_SHORT).show();
-                sendMessageSync(6);
-            }
-        });
-    }
-
-    private void getOperatorsApi(int yearPlanApiId) {
-        Call<List<OperatorApi>> getOperatorApis = service.getOperators(token, yearPlanApiId);
-        getOperatorApis.enqueue(new Callback<List<OperatorApi>>() {
-            @Override
-            public void onResponse(Call<List<OperatorApi>> call, Response<List<OperatorApi>> response) {
-                if (response.isSuccessful()) {
-                    List<OperatorApi> operatorApis = response.body();
-                    synchronizeOperators(operatorApis, yearPlanApiId);
-                } else {
-                    Toast.makeText(activity, activity.getString(R.string.sync_errorOperatorApi), Toast.LENGTH_SHORT).show();
-                    sendMessageSync(6);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<OperatorApi>> call, Throwable t) {
-                Log.d("error: 3", t.toString());
-                Toast.makeText(activity, activity.getString(R.string.sync_errorServerApi), Toast.LENGTH_SHORT).show();
-                sendMessageSync(6);
-            }
-        });
-    }
-
-    private void getFieldsApi(int yearPlanApiId) {
-        Call<List<FieldApi>> getFieldApis = service.getFields(token, yearPlanApiId);
-        getFieldApis.enqueue(new Callback<List<FieldApi>>() {
-            @Override
-            public void onResponse(Call<List<FieldApi>> call, Response<List<FieldApi>> response) {
-                if (response.isSuccessful()) {
-                    List<FieldApi> fieldsApi = response.body();
-                    synchronizeFields(fieldsApi, yearPlanApiId);
-                } else {
-                    Toast.makeText(activity, activity.getString(R.string.sync_errorFieldApi), Toast.LENGTH_SHORT).show();
-                    sendMessageSync(6);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<FieldApi>> call, Throwable t) {
-                Log.d("error: 4", t.toString());
-                Toast.makeText(activity, activity.getString(R.string.sync_errorServerApi), Toast.LENGTH_SHORT).show();
-                sendMessageSync(6);
-            }
-        });
-    }
-
-    private void getParcelsApi(Integer yearPlanApiId) {
-        Call<List<ParcelApi>> getParcelApis = service.getParcels(token, yearPlanApiId);
-        getParcelApis.enqueue(new Callback<List<ParcelApi>>() {
-            @Override
-            public void onResponse(Call<List<ParcelApi>> call, Response<List<ParcelApi>> response) {
-                if (response.isSuccessful()) {
-                    List<ParcelApi> parcelsApi = response.body();
-                    synchronizeParcels(parcelsApi, yearPlanApiId);
-                } else {
-                    Toast.makeText(activity, activity.getString(R.string.sync_errorParcelApi), Toast.LENGTH_SHORT).show();
-                    sendMessageSync(6);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<ParcelApi>> call, Throwable t) {
-                Log.d("error: 5", t.toString());
-                Toast.makeText(activity, activity.getString(R.string.sync_errorServerApi), Toast.LENGTH_SHORT).show();
-                sendMessageSync(6);
-            }
-        });
-    }
-
-    private User userApiToUser(UserApi userApi) {
-        User user = new User(userApi.getId(), userApi.getEmail());
-        return user;
-    }
-
-    private List<YearPlan> yearPlanApiToYearPlan(List<YearPlanApi> yearPlansApi, int userId) {
-        List<YearPlan> yearPlanList = new ArrayList<YearPlan>();
-
-        for (YearPlanApi item : yearPlansApi) {
-            YearPlan yearPlan = new YearPlan(item.getId(), item.getStartYear(), item.getEndYear(), userId);
-            yearPlanList.add(yearPlan);
-        }
-
-        return yearPlanList;
-    }
-
-    private List<Operator> operatorsApiToOperators(List<OperatorApi> operatorsApi, int yearPlanId) {
-        List<Operator> operators = new ArrayList<Operator>();
-
-        for (OperatorApi item : operatorsApi) {
-            Operator operator = new Operator(item.getId(), item.getFirstName(), item.getSurname(), yearPlanId);
-            operators.add(operator);
-        }
-
-        return operators;
-    }
-
-    private List<Field> fieldsApiToOperators(List<FieldApi> fieldsApi, int yearPlanId) {
-        List<Field> fields = new ArrayList<Field>();
-
-        for (FieldApi item : fieldsApi) {
-            Field field = new Field(item.getId(), item.getName(), yearPlanId);
-            fields.add(field);
-        }
-
-        return fields;
-    }
-
-    private List<Parcel> parcelsApiToOperators(List<ParcelApi> parcelsApi, int yearPlanId) {
-        List<Parcel> parcels = new ArrayList<Parcel>();
-
-        for (ParcelApi item : parcelsApi) {
-            Parcel parcel = new Parcel(item.getId(), item.getParcelNumber(), item.getCultivatedArea(), item.isFuelApplication(), item.getArimrOperatorId(), yearPlanId);
-            parcels.add(parcel);
-        }
-
-        return parcels;
-    }
-
-    private void synchronize(UserApi userApi) {
-        sendRequest++;
-        User user = userApiToUser(userApi);
-        userId = user.getId();
-
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (db.userDao().findByName(user.getEmail()) != null) { //check if exist
-                    deleteOld(user);
-                }
-
-                db.userDao().insertAll(user);
-                sendMessageSync(1);
-            }
-        });
-        thread.start();
-    }
-
-    private void synchronizeYearPlans(List<YearPlanApi> yearPlansApi) {
-        sendRequest++;
-        yearPlans = yearPlanApiToYearPlan(yearPlansApi, userId);
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                db.yearPlanDao().insertAll(yearPlans.toArray(new YearPlan[0]));
-                sendMessageSync(2);
-            }
-        });
-        thread.start();
-    }
-
-    private void synchronizeOperators(List<OperatorApi> operatorsApi, int yearPlanId) {
-        sendRequest++;
-        List<Operator> operators = operatorsApiToOperators(operatorsApi, yearPlanId);
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                db.operatorDao().insertAll(operators.toArray(new Operator[0]));
-                sendMessageSync(3);
-            }
-        });
-        thread.start();
-    }
-
-    private void synchronizeFields(List<FieldApi> fieldsApi, int yearPlanId) {
-        sendRequest++;
-        List<Field> fields = fieldsApiToOperators(fieldsApi, yearPlanId);
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                db.fieldDao().insertAll(fields.toArray(new Field[0]));
-                sendMessageSync(4);
-            }
-        });
-        thread.start();
-    }
-
-    private void synchronizeParcels(List<ParcelApi> parcelsApi, int yearPlanId) {
-        sendRequest++;
-        currentYearPlanId = yearPlanId;
-        List<Parcel> parcels = parcelsApiToOperators(parcelsApi, yearPlanId);
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                db.parcelDao().insertAll(parcels.toArray(new Parcel[0]));
-                sendMessageSync(5);
-            }
-        });
-        thread.start();
-    }
-
     private void deleteOld(User user) {
         UserWithYearPlans userWithYearPlans = db.userDao().userWithYearPlans(userId);
 
@@ -392,8 +385,9 @@ public class Synchronizer {
             db.parcelDao().deleteParcelsByYearPlanId(item.getId());
         }
 
-        db.userDao().delete(user);
+        //db.userDao().delete(user);
         db.yearPlanDao().deleteYearPlansByUserId(user.getId());
+        db.userDao().updateUsers(user);
 
     }
 

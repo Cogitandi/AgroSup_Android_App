@@ -4,16 +4,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="20dp"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
     <TextView
+        android:id="@+id/main_logoTV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="100dp"
+        android:gravity="center"
+        android:text="@string/main_logoTV"
+        android:textSize="40sp" />
+
+    <Button
+        android:id="@+id/main_settingsBTN"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_gravity="center"
+        android:width="250dip"
+        android:text="@string/main_settingsBTN" />
 
+    <Button
+        android:id="@+id/main_logoutBTN"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:width="250dip"
+        android:text="@string/main_logoutBTN" />
 </LinearLayout>

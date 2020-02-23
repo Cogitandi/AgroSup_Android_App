@@ -15,6 +15,14 @@ public class UserApi {
     @SerializedName("token")
     private String token;
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -29,13 +37,5 @@ public class UserApi {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 }
