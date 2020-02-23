@@ -4,6 +4,8 @@
     <string name="login_submitBTN">Zaloguj</string>
     <string name="login_emailHint">e-mail</string>
     <string name="login_passwordHint">password</string>
+    <string name="login_incorrectCredentials">Nieprawidłowe dane</string>
+    <string name="login_successfullSynchronization">Zalogowano pomyślnie</string>
     <string name="sync_errorServerApi">Błąd połączenia z serwerem</string>
     <string name="sync_errorOperatorApi">Błąd wczytywania(operator)</string>
     <string name="sync_errorYearPlanApi">Błąd wczytywania(yearPlan)</string>

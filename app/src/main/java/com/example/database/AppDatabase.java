@@ -27,6 +27,7 @@ public abstract class AppDatabase extends RoomDatabase {
         if (sInstance == null) {
             sInstance = Room
                     .databaseBuilder(context.getApplicationContext(), AppDatabase.class, "agroSupDB")
+                    .allowMainThreadQueries()
                     .build();
         }
         return sInstance;

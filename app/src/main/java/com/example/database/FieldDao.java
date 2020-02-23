@@ -6,8 +6,6 @@ import androidx.room.Insert;
 import androidx.room.Query;
 
 import com.example.entities.Field;
-import com.example.entities.Operator;
-import com.example.entities.YearPlan;
 
 import java.util.List;
 
@@ -16,8 +14,11 @@ public interface FieldDao {
     @Query("SELECT * FROM field")
     List<Field> getAll();
 
-    @Query("SELECT * FROM field WHERE yearPlan = :yearPlan")
-    List<Field> loadAllByYearPlan(YearPlan yearPlan);
+    @Query("SELECT * FROM field WHERE yearPlanId = :yearPlanId")
+    List<Field> loadAllByYearPlan(int yearPlanId);
+
+    @Query("DELETE FROM field WHERE yearPlanId = :yearPlanId")
+    void deleteFieldsByYearPlanId(int yearPlanId);
 
     @Insert
     void insertAll(Field... field);

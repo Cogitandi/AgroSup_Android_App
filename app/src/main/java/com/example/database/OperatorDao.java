@@ -6,8 +6,6 @@ import androidx.room.Insert;
 import androidx.room.Query;
 
 import com.example.entities.Operator;
-import com.example.entities.User;
-import com.example.entities.YearPlan;
 
 import java.util.List;
 
@@ -16,8 +14,11 @@ public interface OperatorDao {
     @Query("SELECT * FROM operator")
     List<Operator> getAll();
 
-    @Query("SELECT * FROM operator WHERE yearPlan = :yearPlan")
-    List<Operator> loadAllByYearPlan(YearPlan yearPlan);
+    @Query("SELECT * FROM operator WHERE yearPlanId = :yearPlanId")
+    List<Operator> loadAllByYearPlan(int yearPlanId);
+
+    @Query("DELETE FROM operator WHERE yearPlanId = :yearPlanId")
+    void deleteOperatorsByYearPlanId(int yearPlanId);
 
     @Insert
     void insertAll(Operator... operator);

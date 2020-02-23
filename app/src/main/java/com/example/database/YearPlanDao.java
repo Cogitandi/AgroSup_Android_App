@@ -4,9 +4,8 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Transaction;
 
-import com.example.entities.Parcel;
-import com.example.entities.User;
 import com.example.entities.YearPlan;
 
 import java.util.List;
@@ -16,12 +15,27 @@ public interface YearPlanDao {
     @Query("SELECT * FROM yearPlan")
     List<YearPlan> getAll();
 
-    @Query("SELECT * FROM yearplan WHERE user = :user")
-    List<YearPlan> loadAllByUser(User user);
+    @Query("SELECT * FROM yearplan WHERE userId = :userId")
+    List<YearPlan> loadAllByUser(int userId);
+
+    @Query("DELETE FROM yearplan WHERE userId = :userId")
+    void deleteYearPlansByUserId(int userId);
 
     @Insert
     void insertAll(YearPlan... yearPlan);
 
     @Delete
     void delete(YearPlan yearPlan);
+
+    @Transaction
+    @Query("SELECT * FROM yearPlan where userId IN (:userId) AND id = (:yearPlanId)")
+    YearPlanWithOperators yearPlanWithOperators(int userId, int yearPlanId);
+
+    @Transaction
+    @Query("SELECT * FROM yearPlan where userId IN (:userId) AND id = (:yearPlanId)")
+    YearPlanWithFields yearPlanWithFields(int userId, int yearPlanId);
+
+    @Transaction
+    @Query("SELECT * FROM yearPlan where userId IN (:userId) AND id = (:yearPlanId)")
+    YearPlanWithParcels yearPlanWithParcels(int userId, int yearPlanId);
 }

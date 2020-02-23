@@ -14,24 +14,16 @@ public class Parcel {
     private String parcelNumber;
 
     @ColumnInfo(name = "cultivatedArea")
-    private Integer cultivatedArea;
+    private int cultivatedArea;
 
     @ColumnInfo(name = "fuelApplication")
     private boolean fuelApplication;
 
-    @ColumnInfo(name = "ArimrOperator")
-    private Operator arimrOperator;
+    @ColumnInfo(name = "arimrOperatorId")
+    private int arimrOperatorId;
 
-    @ColumnInfo(name = "yearPlan")
-    private YearPlan yearPlan;
-
-    public YearPlan getYearPlan() {
-        return yearPlan;
-    }
-
-    public void setYearPlan(YearPlan yearPlan) {
-        this.yearPlan = yearPlan;
-    }
+    @ColumnInfo(name = "yearPlanId")
+    private int yearPlanId;
 
     public int getId() {
         return id;
@@ -49,11 +41,11 @@ public class Parcel {
         this.parcelNumber = parcelNumber;
     }
 
-    public Integer getCultivatedArea() {
+    public int getCultivatedArea() {
         return cultivatedArea;
     }
 
-    public void setCultivatedArea(Integer cultivatedArea) {
+    public void setCultivatedArea(int cultivatedArea) {
         this.cultivatedArea = cultivatedArea;
     }
 
@@ -65,11 +57,28 @@ public class Parcel {
         this.fuelApplication = fuelApplication;
     }
 
-    public Operator getArimrOperator() {
-        return arimrOperator;
+    public int getArimrOperatorId() {
+        return arimrOperatorId;
     }
 
-    public void setArimrOperator(Operator arimrOperator) {
-        this.arimrOperator = arimrOperator;
+    public void setArimrOperatorId(int arimrOperatorId) {
+        this.arimrOperatorId = arimrOperatorId;
+    }
+
+    public int getYearPlanId() {
+        return yearPlanId;
+    }
+
+    public void setYearPlanId(int yearPlanId) {
+        this.yearPlanId = yearPlanId;
+    }
+
+    public Parcel(int id, String parcelNumber, int cultivatedArea, boolean fuelApplication, int arimrOperatorId, int yearPlanId) {
+        this.id = id;
+        this.parcelNumber = parcelNumber;
+        this.cultivatedArea = cultivatedArea;
+        this.fuelApplication = fuelApplication;
+        this.arimrOperatorId = arimrOperatorId;
+        this.yearPlanId = yearPlanId;
     }
 }

@@ -11,43 +11,50 @@ public class YearPlan {
     private int id;
 
     @ColumnInfo(name = "startYear")
-    private Integer startYear;
+    private int startYear;
 
     @ColumnInfo(name = "endYear")
-    private Integer endYear;
+    private int endYear;
 
-    @ColumnInfo(name = "user")
-    private User user;
+    @ColumnInfo(name = "userId")
+    private int userId;
 
     public int getId() {
         return id;
+    }
+
+    public YearPlan(int id, int startYear, int endYear, int userId) {
+        this.id = id;
+        this.startYear = startYear;
+        this.endYear = endYear;
+        this.userId = userId;
     }
 
     public void setId(int id) {
         this.id = id;
     }
 
-    public Integer getStartYear() {
+    public int getStartYear() {
         return startYear;
     }
 
-    public void setStartYear(Integer startYear) {
+    public void setStartYear(int startYear) {
         this.startYear = startYear;
     }
 
-    public Integer getEndYear() {
+    public int getEndYear() {
         return endYear;
     }
 
-    public void setEndYear(Integer endYear) {
+    public void setEndYear(int endYear) {
         this.endYear = endYear;
     }
 
-    public User getUser() {
-        return user;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }

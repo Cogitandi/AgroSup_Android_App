@@ -16,8 +16,8 @@ public class Operator {
     @ColumnInfo(name = "surname")
     private String surname;
 
-    @ColumnInfo(name = "yearPlan")
-    private YearPlan yearPlan;
+    @ColumnInfo(name = "yearPlanId")
+    private int yearPlanId;
 
     public int getId() {
         return id;
@@ -43,11 +43,18 @@ public class Operator {
         this.surname = surname;
     }
 
-    public YearPlan getYearPlan() {
-        return yearPlan;
+    public Operator(int id, String firstName, String surname, int yearPlanId) {
+        this.id = id;
+        this.firstName = firstName;
+        this.surname = surname;
+        this.yearPlanId = yearPlanId;
     }
 
-    public void setYearPlan(YearPlan yearPlan) {
-        this.yearPlan = yearPlan;
+    public int getYearPlanId() {
+        return yearPlanId;
+    }
+
+    public void setYearPlanId(int yearPlanId) {
+        this.yearPlanId = yearPlanId;
     }
 }

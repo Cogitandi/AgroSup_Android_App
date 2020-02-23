@@ -5,9 +5,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
-import com.example.entities.Field;
 import com.example.entities.Parcel;
-import com.example.entities.YearPlan;
 
 import java.util.List;
 
@@ -16,8 +14,11 @@ public interface ParcelDao {
     @Query("SELECT * FROM parcel")
     List<Parcel> getAll();
 
-    @Query("SELECT * FROM parcel WHERE yearPlan = :yearPlan")
-    List<Parcel> loadAllByYearPlan(YearPlan yearPlan);
+    @Query("SELECT * FROM parcel WHERE yearPlanId = :yearPlanId")
+    List<Parcel> loadAllByYearPlan(int yearPlanId);
+
+    @Query("DELETE FROM parcel WHERE yearPlanId = :yearPlanId")
+    void deleteParcelsByYearPlanId(int yearPlanId);
 
     @Insert
     void insertAll(Parcel... parcel);

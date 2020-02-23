@@ -13,8 +13,8 @@ public class Field {
     @ColumnInfo(name = "name")
     private String name;
 
-    @ColumnInfo(name = "yearPlan")
-    private YearPlan yearPlan;
+    @ColumnInfo(name = "yearPlanId")
+    private int yearPlanId;
 
     public int getId() {
         return id;
@@ -32,11 +32,17 @@ public class Field {
         this.name = name;
     }
 
-    public YearPlan getYearPlan() {
-        return yearPlan;
+    public int getYearPlanId() {
+        return yearPlanId;
     }
 
-    public void setYearPlan(YearPlan yearPlan) {
-        this.yearPlan = yearPlan;
+    public void setYearPlanId(int yearPlanId) {
+        this.yearPlanId = yearPlanId;
+    }
+
+    public Field(int id, String name, int yearPlanId) {
+        this.id = id;
+        this.name = name;
+        this.yearPlanId = yearPlanId;
     }
 }

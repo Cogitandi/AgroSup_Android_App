@@ -28,7 +28,7 @@ public interface GetData {
     @GET("users.json")
     Call<List<UserApi>> getUser(@Header("authorization") String token);
 
-    @GET("yearplans.json")
+    @GET("year_plans.json")
     Call<List<YearPlanApi>> getYearPlans(@Header("authorization") String token);
 
     @GET("fields.json")
