@@ -7,7 +7,7 @@
     android:orientation="vertical"
     tools:context=".FieldsActivity">
 
-    <ListView
+    <ExpandableListView
         android:id="@+id/fields_fieldsLV"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

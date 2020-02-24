@@ -43,6 +43,6 @@ public interface YearPlanDao {
     YearPlanWithParcels yearPlanWithParcels(int userId, int yearPlanId);
 
     @Transaction
-    @Query("SELECT * FROM field where yearPlanId = (:yearPlanId)")
+    @Query("SELECT * FROM field where yearPlanId = (:yearPlanId)" )
     List<FieldWithParcels> fieldsWithParcels(int yearPlanId);
 }

@@ -3,4 +3,5 @@
     android:id="@+id/fields_fieldsLVRow"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:textSize="15sp"></TextView>
+    android:height="70dp"
+    android:textSize="25sp"></TextView>

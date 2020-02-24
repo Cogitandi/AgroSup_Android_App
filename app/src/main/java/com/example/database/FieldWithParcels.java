@@ -1,5 +1,7 @@
 package com.example.database;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.room.Embedded;
 import androidx.room.Relation;
@@ -18,9 +20,16 @@ public class FieldWithParcels {
     )
     public List<Parcel> parcels;
 
+    public float getFieldArea() {
+        float area = 0;
+        for(Parcel item: parcels) {
+            area+=item.getCultivatedArea();
+        }
+        return area/100;
+    }
     @NonNull
     @Override
     public String toString() {
-        return field.getName();
+        return field.getName()+"\t\t\t\t ["+getFieldArea()+" ha]";
     }
 }
