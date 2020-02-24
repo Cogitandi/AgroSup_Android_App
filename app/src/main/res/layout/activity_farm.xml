@@ -6,46 +6,40 @@
     android:layout_height="match_parent"
     android:layout_margin="20dp"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".FarmActivity">
 
     <TextView
-        android:id="@+id/main_logoTV"
+        android:id="@+id/farm_yearPlanTV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="100dp"
         android:gravity="center"
-        android:text="@string/main_logoTV"
         android:textSize="40sp" />
 
     <Button
-        android:id="@+id/main_farmBTN"
+        android:id="@+id/farm_fieldsBTN"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_margin="10dip"
         android:width="250dip"
         android:minHeight="60dip"
-        android:text="@string/main_farmBTN"
-        android:textSize="14sp" />
+        android:text="@string/farm_fieldsBTN" />
 
     <Button
-        android:id="@+id/main_settingsBTN"
+        android:id="@+id/farm_historyBTN"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_margin="10dip"
         android:width="250dip"
         android:minHeight="60dip"
-        android:text="@string/main_settingsBTN"
-        android:textSize="14sp" />
+        android:text="@string/farm_historyBTN" />
 
     <Button
-        android:id="@+id/main_logoutBTN"
+        android:id="@+id/farm_summaryBTN"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_margin="10dip"
         android:width="250dip"
         android:minHeight="60dip"
-        android:text="@string/main_logoutBTN" />
+        android:text="@string/farm_summaryBTN" />
 </LinearLayout>

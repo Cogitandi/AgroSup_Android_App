@@ -21,6 +21,9 @@ public interface YearPlanDao {
     @Query("DELETE FROM yearplan WHERE userId = :userId")
     void deleteYearPlansByUserId(int userId);
 
+    @Query("SELECT * FROM yearplan WHERE id = :yearPlanId")
+    YearPlan getYearPlanById(int yearPlanId);
+
     @Insert
     void insertAll(YearPlan... yearPlan);
 
@@ -38,4 +41,8 @@ public interface YearPlanDao {
     @Transaction
     @Query("SELECT * FROM yearPlan where userId IN (:userId) AND id = (:yearPlanId)")
     YearPlanWithParcels yearPlanWithParcels(int userId, int yearPlanId);
+
+    @Transaction
+    @Query("SELECT * FROM field where yearPlanId = (:yearPlanId)")
+    List<FieldWithParcels> fieldsWithParcels(int yearPlanId);
 }

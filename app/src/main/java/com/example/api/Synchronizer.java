@@ -51,6 +51,9 @@ public class Synchronizer {
     private boolean error = false;
     private LoginCredentials login;
 
+    private int previousSelectedYearPlanId;
+    private int previousSelectedOperatorId;
+
 
     // msg
     // 6 - fail synchronization
@@ -294,7 +297,9 @@ public class Synchronizer {
         List<Parcel> parcels = new ArrayList<>();
 
         for (ParcelApi item : parcelsApi) {
-            Parcel parcel = new Parcel(item.getId(), item.getParcelNumber(), item.getCultivatedArea(), item.isFuelApplication(), item.getArimrOperatorId(), yearPlanId);
+            Parcel parcel = new Parcel(item.getId(), item.getParcelNumber(), item.getCultivatedArea(), item.isFuelApplication(), yearPlanId);
+            parcel.setArimrOperatorId(item.getArimrOperatorId());
+            parcel.setFieldId(item.getFieldId());
             parcels.add(parcel);
         }
 
@@ -307,12 +312,14 @@ public class Synchronizer {
         userId = user.getId();
 
         Thread thread = new Thread(() -> {
-            if (db.userDao().findByName(user.getEmail()) != null) { //check if exist
+            User pUser = db.userDao().findByName(user.getEmail());
+            if (pUser != null) { //check if exist
+                previousSelectedYearPlanId = pUser.getSelectedYearPlanId();
+                previousSelectedOperatorId = pUser.getSelectedOperatorId();
                 deleteOld(user);
             } else {
                 db.userDao().insertAll(user);
             }
-
 
             sendMessageSync(1);
         });
@@ -377,6 +384,9 @@ public class Synchronizer {
     }
 
     private void deleteOld(User user) {
+        user.setSelectedYearPlanId(previousSelectedYearPlanId);
+        user.setSelectedOperatorId(previousSelectedOperatorId);
+
         UserWithYearPlans userWithYearPlans = db.userDao().userWithYearPlans(userId);
 
         for (YearPlan item : userWithYearPlans.yearPlans) {
@@ -385,7 +395,6 @@ public class Synchronizer {
             db.parcelDao().deleteParcelsByYearPlanId(item.getId());
         }
 
-        //db.userDao().delete(user);
         db.yearPlanDao().deleteYearPlansByUserId(user.getId());
         db.userDao().updateUsers(user);
 

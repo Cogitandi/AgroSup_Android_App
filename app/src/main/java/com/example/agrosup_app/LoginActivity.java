@@ -120,6 +120,7 @@ public class LoginActivity extends AppCompatActivity {
             }
             for (Parcel parcel : db.yearPlanDao().yearPlanWithParcels(1, yearPlan.getId()).parcels) {
                 Log.d("parcel id: ", parcel.getParcelNumber());
+                Log.d("operator id: ", parcel.getArimrOperatorId()+"x");
             }
 
         }

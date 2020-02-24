@@ -17,14 +17,21 @@
     <string name="sync_errorTokenApi">Błąd wczytywania(token)</string>
 
     <string name="main_logoTV">AgroSup</string>
+    <string name="main_farmBTN">Gospodarstwo</string>
     <string name="main_settingsBTN">Ustawienia</string>
     <string name="main_logoutBTN">Wyloguj</string>
+    <string name="main_chooseYearPlanToast">Wybierz sezon</string>
 
     <string name="settings_yearPlanTV">Plan:</string>
     <string name="settings_operatorTV">Operator:</string>
     <string name="settings_impulsTV">Ilość impulsów:</string>
     <string name="settings_saveBTN">Zapisz</string>
     <string name="settings_savedToast">Zapisano</string>
+
+    <string name="farm_fieldsBTN">Pola</string>
+    <string name="farm_historyBTN">Historia zabiegów</string>
+    <string name="farm_summaryBTN">Podsumowanie</string>
+    <string name="farm_yearPlanTV">Sezon</string>
 
 
 </resources>

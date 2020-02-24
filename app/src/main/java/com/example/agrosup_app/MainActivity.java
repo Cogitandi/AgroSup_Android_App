@@ -7,18 +7,22 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.database.AppDatabase;
 import com.example.entities.User;
+import com.example.entities.YearPlan;
 
 public class MainActivity extends AppCompatActivity {
 
     private Handler handler;
     AppDatabase db;
     User user;
+    private Button farmBTN;
     private Button settingsBTN;
     private Button logoutBTN;
 
@@ -31,6 +35,12 @@ public class MainActivity extends AppCompatActivity {
         onClickListeners();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkSelectedOptions();
+    }
+
     private void getLoggedUser() {
         Thread thread = new Thread(() -> {
             user = db.userDao().findLogged(true);
@@ -39,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initialize() {
+        farmBTN = findViewById(R.id.main_farmBTN);
         settingsBTN = findViewById(R.id.main_settingsBTN);
         logoutBTN = findViewById(R.id.main_logoutBTN);
 
@@ -57,6 +68,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onClickListeners() {
+        farmBTN.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplication(), FarmActivity.class);
+            startActivity(intent);
+        });
         logoutBTN.setOnClickListener(v -> {
             logoutBTN.setClickable(false);
             Thread thread = new Thread(() -> {
@@ -68,16 +83,12 @@ public class MainActivity extends AppCompatActivity {
             });
             thread.start();
         });
+
         settingsBTN.setOnClickListener(v -> {
             Intent intent = new Intent(getApplication(), SettingsActivity.class);
             startActivity(intent);
         });
-    }
 
-    private void sendMessage(int id) {
-        Message message = new Message();
-        message.what = id;
-        handler.sendMessage(message);
     }
 
     private void hideStatusBar() {
@@ -89,5 +100,24 @@ public class MainActivity extends AppCompatActivity {
         // status bar is hidden, so hide that too if necessary.
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
+    }
+
+    private void checkSelectedOptions() {
+        Thread thread = new Thread(() -> {
+            user = db.userDao().findLogged(true);
+            YearPlan yearPlan = db.yearPlanDao().getYearPlanById(user.getSelectedYearPlanId());
+            Log.d("yearPlan", yearPlan+"");
+            if (yearPlan == null) {
+                runOnUiThread(() -> {
+                    Toast.makeText(getApplication(), getString(R.string.main_chooseYearPlanToast), Toast.LENGTH_SHORT).show();
+                });
+
+                Intent intent = new Intent(getApplication(), SettingsActivity.class);
+                startActivity(intent);
+
+            }
+        });
+        thread.start();
+
     }
 }
