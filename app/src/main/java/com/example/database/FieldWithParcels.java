@@ -32,4 +32,8 @@ public class FieldWithParcels {
     public String toString() {
         return field.getName()+"\t\t\t\t ["+getFieldArea()+" ha]";
     }
+
+    public String getPlant() {
+        return field.getPlantName();
+    }
 }

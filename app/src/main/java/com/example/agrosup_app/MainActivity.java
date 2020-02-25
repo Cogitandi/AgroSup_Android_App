@@ -30,15 +30,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        hideStatusBar();
         initialize();
-        onClickListeners();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         checkSelectedOptions();
+        hideStatusBar();
     }
 
     private void getLoggedUser() {
@@ -65,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
+        onClickListeners();
     }
 
     private void onClickListeners() {

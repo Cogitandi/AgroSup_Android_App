@@ -16,6 +16,9 @@ public class Field {
     @ColumnInfo(name = "yearPlanId")
     private int yearPlanId;
 
+    @ColumnInfo(name = "plantName")
+    private String plantName;
+
     public int getId() {
         return id;
     }
@@ -32,6 +35,7 @@ public class Field {
         this.name = name;
     }
 
+
     public int getYearPlanId() {
         return yearPlanId;
     }
@@ -40,9 +44,18 @@ public class Field {
         this.yearPlanId = yearPlanId;
     }
 
-    public Field(int id, String name, int yearPlanId) {
+    public String getPlantName() {
+        return plantName;
+    }
+
+    public void setPlantName(String plantName) {
+        this.plantName = plantName;
+    }
+
+    public Field(int id, String name, int yearPlanId, String plantName) {
         this.id = id;
         this.name = name;
         this.yearPlanId = yearPlanId;
+        this.plantName = plantName;
     }
 }

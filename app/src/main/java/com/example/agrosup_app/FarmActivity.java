@@ -26,8 +26,13 @@ public class FarmActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_farm);
-        hideStatusBar();
         initialize();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        hideStatusBar();
     }
 
     private void initialize() {

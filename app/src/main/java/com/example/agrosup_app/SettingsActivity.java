@@ -40,6 +40,11 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         initialize();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         hideStatusBar();
     }
 

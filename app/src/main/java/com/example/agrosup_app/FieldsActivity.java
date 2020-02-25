@@ -33,16 +33,18 @@ public class FieldsActivity extends AppCompatActivity {
     ExpandableListView fieldsLV;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fields);
-        hideStatusBar();
         initialize();
-
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        hideStatusBar();
+    }
 
     private void initialize() {
         db = AppDatabase.getInstance(getApplicationContext());
@@ -66,17 +68,17 @@ public class FieldsActivity extends AppCompatActivity {
     }
 
     private void createFieldsList() {
-        int i=0;
+        int i = 0;
         SparseArray<FieldsGroup> groups = new SparseArray<>();
-        for(FieldWithParcels item: fields) {
+        for (FieldWithParcels item : fields) {
             FieldsGroup group = new FieldsGroup(item.toString());
-            for(Parcel parcel: item.parcels) {
-                group.children.add(parcel.getParcelNumber()+" - "+parcel.getCultivatedArea());
+            for (Parcel parcel : item.parcels) {
+                group.children.add(parcel.getParcelNumber() + " - " + parcel.getCultivatedArea());
             }
-            groups.append(i++,group);
+            groups.append(i++, group);
         }
 
-        ExpandableListAdapter adapter = new ExpandableListAdapter(this, groups);
+        ExpandableListAdapter adapter = new ExpandableListAdapter(this, fields);
         fieldsLV.setAdapter(adapter);
     }
 

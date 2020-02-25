@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fields_layout"
     android:layout_width="match_parent"
     android:layout_height="40dp"
     android:clickable="true"
     android:orientation="vertical"
-    tools:context=".FieldsActivity" >
+    tools:context=".FieldsActivity">
+
+    <TextView
+        android:id="@+id/fields_fieldsDescTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="5dp"
+        android:gravity="center_vertical"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:visibility="gone"></TextView>
 
     <TextView
         android:id="@+id/fields_fieldsLVTV"
@@ -14,12 +25,11 @@
         android:drawablePadding="5dp"
         android:gravity="center_vertical"
         android:textSize="14sp"
-        android:textStyle="bold" >
-    </TextView>
+        android:textStyle="bold"></TextView>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/black" />
+<!--    <View-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="1dp"-->
+<!--        android:background="@android:color/black" />-->
 
 </LinearLayout>

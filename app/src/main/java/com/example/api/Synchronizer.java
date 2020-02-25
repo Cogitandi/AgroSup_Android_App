@@ -286,7 +286,7 @@ public class Synchronizer {
         List<Field> fields = new ArrayList<>();
 
         for (FieldApi item : fieldsApi) {
-            Field field = new Field(item.getId(), item.getName(), yearPlanId);
+            Field field = new Field(item.getId(), item.getName(), yearPlanId, item.getPlant());
             fields.add(field);
         }
 

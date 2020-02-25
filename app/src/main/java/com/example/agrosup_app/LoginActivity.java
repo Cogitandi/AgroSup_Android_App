@@ -45,7 +45,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         initialize();
-        onClickListeners();
     }
 
     @Override
@@ -79,6 +78,7 @@ public class LoginActivity extends AppCompatActivity {
             }
 
         };
+        onClickListeners();
     }
 
     private void onClickListeners() {

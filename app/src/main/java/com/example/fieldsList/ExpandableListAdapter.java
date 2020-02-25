@@ -7,25 +7,33 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckedTextView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.agrosup_app.R;
+import com.example.database.FieldWithParcels;
+import com.example.entities.Parcel;
+
+import java.util.List;
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
-    private final SparseArray<FieldsGroup> groups;
-    public LayoutInflater inflater;
-    public Activity activity;
+    private final SparseArray<FieldWithParcels> groups = new SparseArray<>();
+    private LayoutInflater inflater;
+    private Activity activity;
 
-    public ExpandableListAdapter(Activity act, SparseArray<FieldsGroup> groups) {
+    public ExpandableListAdapter(Activity act, List<FieldWithParcels> groups) {
         activity = act;
-        this.groups = groups;
         inflater = act.getLayoutInflater();
+        int i=0;
+        for(FieldWithParcels item: groups) {
+            this.groups.put(i++,item);
+        }
     }
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return groups.get(groupPosition).children.get(childPosition);
+        return groups.get(groupPosition).parcels.get(childPosition);
     }
 
     @Override
@@ -35,11 +43,24 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getChildView(int groupPosition, final int childPosition,boolean isLastChild, View convertView, ViewGroup parent) {
-        final String children = (String) getChild(groupPosition, childPosition);
+
+        Parcel parcel = (Parcel) getChild(groupPosition, childPosition);
+        final String children = parcel.getParcelNumber()+ " - "+ parcel.getCultivatedArea()+" ar";
         TextView text = null;
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.fields_child, null);
         }
+
+        if(childPosition == 0) {
+            FieldWithParcels field = (FieldWithParcels) getGroup(groupPosition);
+            TextView tv =(TextView) convertView.findViewById(R.id.fields_fieldsDescTV);
+            tv.setText("Uprawa: "+field.getPlant());
+            tv.setVisibility(View.VISIBLE);
+        } else {
+            TextView tv =(TextView) convertView.findViewById(R.id.fields_fieldsDescTV);
+            tv.setVisibility(View.GONE);
+        }
+
         text = (TextView) convertView.findViewById(R.id.fields_fieldsLVTV);
         text.setText(children);
         convertView.setOnClickListener(new View.OnClickListener() {
@@ -54,7 +75,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return groups.get(groupPosition).children.size();
+        return groups.get(groupPosition).parcels.size();
     }
 
     @Override
@@ -75,6 +96,12 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public void onGroupExpanded(int groupPosition) {
         super.onGroupExpanded(groupPosition);
+        FieldWithParcels field = (FieldWithParcels) getGroup(groupPosition);
+        Toast.makeText(activity, field.getPlant(),
+                Toast.LENGTH_SHORT).show();
+        TextView tv = new TextView(activity);
+        tv.setText(field.getPlant());
+
     }
 
     @Override
@@ -87,8 +114,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.fields_group, null);
         }
-        FieldsGroup group = (FieldsGroup) getGroup(groupPosition);
-        ((CheckedTextView) convertView).setText(group.string);
+        FieldWithParcels field = (FieldWithParcels) getGroup(groupPosition);
+        ((CheckedTextView) convertView).setText(field.toString());
         ((CheckedTextView) convertView).setChecked(isExpanded);
         return convertView;
     }
