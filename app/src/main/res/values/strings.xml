@@ -33,5 +33,8 @@
     <string name="farm_summaryBTN">Podsumowanie</string>
     <string name="farm_yearPlanTV">Sezon</string>
 
+    <string name="summary_fuelTV">Paliwo:</string>
+    <string name="summary_wholeFarmTV">Całe gospodarstwo:</string>
+
 
 </resources>

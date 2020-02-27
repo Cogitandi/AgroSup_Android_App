@@ -4,8 +4,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
-import android.widget.ListView;
+import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
@@ -27,7 +31,7 @@ public class SummaryActivity extends AppCompatActivity {
     User user;
     List<Operator> operators;
     List<FieldWithParcels> fields;
-    ListView fieldsLV;
+    LinearLayout layout;
 
     // 1 - db executed
 
@@ -47,6 +51,7 @@ public class SummaryActivity extends AppCompatActivity {
 
     private void initialize() {
         db = AppDatabase.getInstance(getApplicationContext());
+        layout = findViewById(R.id.summary_Layout);
         handler = new Handler(getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
@@ -59,31 +64,114 @@ public class SummaryActivity extends AppCompatActivity {
 
     private void messageAction(Message msg) {
         if (msg.what == 1) {
-            createSummary(operators,fields);
+            createSummary(operators, fields);
         }
 
     }
 
     private void createSummary(List<Operator> operators, List<FieldWithParcels> fields) {
-        String text = "";
+        operators.add(new Operator(0, "Brak", "dopłat", 0));
         for (Operator operator : operators) {
-            text += "\noperator: "+operator.getFirstName()+" "+operator.getSurname()+"\n";
-            List<String> plantNames = fetchPlants(fields, operator.getId());
+            TableLayout tableLayout = tableLayout();
+            tableLayout.addView(createHeaderRow(operator.getFirstName() + " " + operator.getSurname()));
+            List<String> plantNames = fetchPlants(fields, operator.getId(), false);
+
             for (String plantName : plantNames) {
-                text+=plantName+": "+countArea(fields, operator.getId(), plantName+"\n");
-                //Log.d(plantName, countArea(fields, operator.getId(), plantName)+"");
+                String area = countArea(fields, operator.getId(), plantName, false);
+                tableLayout.addView(createPlantRow(plantName, area));
             }
+            //fuel
+            String area = countFuel(fields, operator.getId(), false);
+            tableLayout.addView(createPlantRow(getString(R.string.summary_fuelTV), area));
+
+            layout.addView(tableLayout);
         }
-        TextView tv= findViewById(R.id.summary_smTV);
-        tv.setText(text);
+
+        // Whole farm
+        TableLayout tableLayout = tableLayout();
+        tableLayout.addView(createHeaderRow(getString(R.string.summary_wholeFarmTV)));
+        List<String> plantNames = fetchPlants(fields, 0, true);
+
+        for (String plantName : plantNames) {
+            String area = countArea(fields, 0, plantName, true);
+            tableLayout.addView(createPlantRow(plantName, area));
+        }
+        //fuel
+        String area = countFuel(fields, -1, true);
+        tableLayout.addView(createPlantRow(getString(R.string.summary_fuelTV), area));
+
+
+        layout.addView(tableLayout);
     }
 
-    private List<String> fetchPlants(List<FieldWithParcels> fields, int operatorId) {
+    private TableLayout tableLayout() {
+        TableLayout tableLayout = new TableLayout(this);
+        TableLayout.LayoutParams params = new TableLayout.LayoutParams();
+        float dpRatio = this.getResources().getDisplayMetrics().density;
+        int pixelForDp = (int) (20 * dpRatio);
+        params.setMargins(0, pixelForDp, 0, 0);
+        tableLayout.setLayoutParams(params);
+
+        return tableLayout;
+    }
+
+    private TableRow createPlantRow(String plantName, String area) {
+        TableRow row = new TableRow(this);
+        row.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+
+        TextView left = new TextView(this);
+        left.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
+        left.setGravity(Gravity.CENTER_HORIZONTAL);
+        left.setText(plantName);
+        left.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f);
+
+        TextView right = new TextView(this);
+        right.setGravity(Gravity.CENTER_HORIZONTAL);
+        right.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
+        right.setText(area + " ha");
+        right.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f);
+
+        row.addView(left);
+        row.addView(right);
+        return row;
+    }
+
+    private TableRow createHeaderRow(String name) {
+        TableRow row = new TableRow(this);
+        row.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+
+        TextView tv = new TextView(this);
+        tv.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1f));
+        tv.setText(name);
+        tv.setGravity(Gravity.CENTER_HORIZONTAL);
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30f);
+
+        row.addView(tv);
+        return row;
+    }
+
+    private String countFuel(List<FieldWithParcels> fields, int operatorId, boolean wholeFarm) {
+        float area = 0;
+        for (FieldWithParcels field : fields) {
+            for (Parcel parcel : field.parcels) {
+                Log.d("parcel id", parcel.getParcelNumber()+" paliwo:"+parcel.isFuelApplication());
+                if (parcel.isFuelApplication() && (parcel.getArimrOperatorId() == operatorId || wholeFarm)) {
+                    area += parcel.getCultivatedArea();
+                }
+            }
+        }
+        float areaHa = area / 100;
+        String areaHaString = Float.toString(areaHa);
+        areaHaString = String.format(areaHaString, "%.2f");
+        return areaHaString;
+    }
+
+    private List<String> fetchPlants(List<FieldWithParcels> fields, int operatorId, boolean wholeFarm) {
         List<String> plantNames = new ArrayList<>();
         for (FieldWithParcels field : fields) {
             String plantName = field.getPlant();
             for (Parcel parcel : field.parcels) {
-                if (!plantNames.contains(plantName) && parcel.getArimrOperatorId() == operatorId) {
+                if (!plantNames.contains(plantName) && (parcel.getArimrOperatorId() == operatorId || wholeFarm)) {
                     plantNames.add(plantName);
                 }
             }
@@ -91,16 +179,19 @@ public class SummaryActivity extends AppCompatActivity {
         return plantNames;
     }
 
-    private int countArea(List<FieldWithParcels> fields, int operatorId, String plantName) {
-        int area = 0;
+    private String countArea(List<FieldWithParcels> fields, int operatorId, String plantName, boolean wholeFarm) {
+        float area = 0;
         for (FieldWithParcels field : fields) {
             for (Parcel parcel : field.parcels) {
-                if (field.getPlant() == plantName && parcel.getArimrOperatorId() == operatorId) {
+                if (field.getPlant().equals(plantName) && (parcel.getArimrOperatorId() == operatorId || wholeFarm)) {
                     area += parcel.getCultivatedArea();
                 }
             }
         }
-        return area;
+        float areaHa = area / 100;
+        String areaHaString = Float.toString(areaHa);
+        areaHaString = String.format(areaHaString, "%.2f");
+        return areaHaString;
     }
 
     private void sendMessage(int code) {

@@ -96,7 +96,6 @@ public class Parcel {
     public void setFuelApplication(boolean fuelApplication) {
         this.fuelApplication = fuelApplication;
     }
-
     public void setYearPlanId(int yearPlanId) {
         this.yearPlanId = yearPlanId;
     }
