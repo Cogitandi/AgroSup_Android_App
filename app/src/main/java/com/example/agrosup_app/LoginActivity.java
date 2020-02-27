@@ -93,7 +93,7 @@ public class LoginActivity extends AppCompatActivity {
             loadingBar.setVisibility(View.VISIBLE);
 
             Synchronizer sync = new Synchronizer(LoginActivity.this, handler);
-            sync.startSynchronization("a@b.pl", "ziomek");
+            sync.startSynchronization(email, password);
         });
     }
 
@@ -128,7 +128,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void successSynchronization() {
         printDB();
-        makeLogged("a@b.pl");
+        makeLogged(email);
         Toast.makeText(getApplication(), getString(R.string.login_successfullSynchronization), Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(getApplication(), MainActivity.class);
         startActivity(intent);

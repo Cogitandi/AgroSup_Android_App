@@ -34,6 +34,16 @@ dependencies {
     // retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    //xml
+    implementation 'com.tickaroo.tikxml:annotation:0.8.13'
+    implementation 'com.tickaroo.tikxml:core:0.8.13'
+    implementation 'com.tickaroo.tikxml:retrofit-converter:0.8.13'
+
+    implementation ('com.tickaroo.tikxml:converter-date-rfc3339:0.8.13') {
+        exclude group: "com.tickaroo.tikxml", module: "core"
+    }
+
+    implementation 'com.squareup.retrofit2:converter-simplexml:2.5.0'
 
     // room database
     def room_version = "2.2.4"
@@ -47,6 +57,9 @@ dependencies {
 
     // optional - RxJava support for Room
     implementation "androidx.room:room-rxjava2:$room_version"
+    // RxJava 2.x
+    implementation "com.squareup.retrofit2:adapter-rxjava2:2.4.0"
+
 
     // optional - Guava support for Room, including Optional and ListenableFuture
     implementation "androidx.room:room-guava:$room_version"

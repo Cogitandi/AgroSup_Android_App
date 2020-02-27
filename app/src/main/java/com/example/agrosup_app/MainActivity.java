@@ -1,8 +1,5 @@
 package com.example.agrosup_app;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,12 +7,25 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.api.GetData;
+import com.example.api.RetrofitClient;
+import com.example.apiModels.Attribut;
+import com.example.apiModels.FeatureCollection;
+import com.example.apiModels.Layer;
 import com.example.database.AppDatabase;
 import com.example.entities.User;
 import com.example.entities.YearPlan;
+
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,6 +48,27 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         checkSelectedOptions();
         hideStatusBar();
+    }
+
+    private void getParcelEwApi() {
+        GetData retro = RetrofitClient.getRetrofitInstanceXML().create(GetData.class);
+        Call<FeatureCollection> call = retro.getParcelEw("336441.78000000000,710330.51000000000,336447.78000000000,710336.51000000000");
+        call.enqueue(new Callback<FeatureCollection>() {
+            @Override
+            public void onResponse(Call<FeatureCollection> call, Response<FeatureCollection> response) {
+                Layer layer = response.body().getFeatureMember().getLayer();
+                for (Map.Entry<String, String> entry : layer.getMap().entrySet()) {
+                    Log.d(entry.getKey(), entry.getValue());
+                }
+
+            }
+
+
+            @Override
+            public void onFailure(Call<FeatureCollection> call, Throwable t) {
+                Log.d("blad", t.toString());
+            }
+        });
     }
 
     private void getLoggedUser() {
@@ -106,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
         Thread thread = new Thread(() -> {
             user = db.userDao().findLogged(true);
             YearPlan yearPlan = db.yearPlanDao().getYearPlanById(user.getSelectedYearPlanId());
-            Log.d("yearPlan", yearPlan+"");
+            Log.d("yearPlan", yearPlan + "");
             if (yearPlan == null) {
                 runOnUiThread(() -> {
                     Toast.makeText(getApplication(), getString(R.string.main_chooseYearPlanToast), Toast.LENGTH_SHORT).show();

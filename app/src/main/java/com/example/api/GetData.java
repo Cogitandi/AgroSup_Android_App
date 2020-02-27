@@ -1,5 +1,6 @@
 package com.example.api;
 
+import com.example.apiModels.FeatureCollection;
 import com.example.apiModels.FieldApi;
 import com.example.apiModels.OperatorApi;
 import com.example.apiModels.ParcelApi;
@@ -39,5 +40,8 @@ public interface GetData {
 
     @GET("parcels.json")
     Call<List<ParcelApi>> getParcels(@Header("authorization") String token, @Query("yearPlan") Integer id);
+
+    @GET("KrajowaIntegracjaEwidencjiGruntow?SERVICE=WMS&request=getFeatureInfo&version=1.3.0&layers=powiaty,zsin,obreby,dzialki,geoportal,numery_dzialek,budynki&styles=&crs=EPSG:2180&width=507&height=789&format=image/png&transparent=true&query_layers=powiaty,zsin,obreby,dzialki,geoportal,numery_dzialek,budynki&i=101&j=371&INFO_FORMAT=text/xml")
+    Call<FeatureCollection> getParcelEw(@Query("bbox") String bbox);
 
 }
