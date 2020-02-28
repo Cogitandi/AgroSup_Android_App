@@ -154,7 +154,6 @@ public class SummaryActivity extends AppCompatActivity {
         float area = 0;
         for (FieldWithParcels field : fields) {
             for (Parcel parcel : field.parcels) {
-                Log.d("parcel id", parcel.getParcelNumber()+" paliwo:"+parcel.isFuelApplication());
                 if (parcel.isFuelApplication() && (parcel.getArimrOperatorId() == operatorId || wholeFarm)) {
                     area += parcel.getCultivatedArea();
                 }

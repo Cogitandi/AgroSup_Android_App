@@ -4,6 +4,7 @@ import com.example.apiModels.FeatureCollection;
 import com.example.apiModels.FieldApi;
 import com.example.apiModels.OperatorApi;
 import com.example.apiModels.ParcelApi;
+import com.example.apiModels.TransformationApi;
 import com.example.apiModels.UserApi;
 import com.example.apiModels.YearPlanApi;
 
@@ -43,5 +44,8 @@ public interface GetData {
 
     @GET("KrajowaIntegracjaEwidencjiGruntow?SERVICE=WMS&request=getFeatureInfo&version=1.3.0&layers=powiaty,zsin,obreby,dzialki,geoportal,numery_dzialek,budynki&styles=&crs=EPSG:2180&width=507&height=789&format=image/png&transparent=true&query_layers=powiaty,zsin,obreby,dzialki,geoportal,numery_dzialek,budynki&i=101&j=371&INFO_FORMAT=text/xml")
     Call<FeatureCollection> getParcelEw(@Query("bbox") String bbox);
+
+    @GET("trans")
+    Call<TransformationApi> getConverted(@Query("x") double x, @Query("y") double y,@Query("z") int z,@Query("s_srs") int ssrs,@Query("t_srs") int tsrs);
 
 }

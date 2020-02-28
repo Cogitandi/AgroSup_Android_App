@@ -31,6 +31,9 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
 
+    //google location
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
+
     // retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
@@ -39,7 +42,7 @@ dependencies {
     implementation 'com.tickaroo.tikxml:core:0.8.13'
     implementation 'com.tickaroo.tikxml:retrofit-converter:0.8.13'
 
-    implementation ('com.tickaroo.tikxml:converter-date-rfc3339:0.8.13') {
+    implementation('com.tickaroo.tikxml:converter-date-rfc3339:0.8.13') {
         exclude group: "com.tickaroo.tikxml", module: "core"
     }
 

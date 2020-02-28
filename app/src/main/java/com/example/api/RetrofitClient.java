@@ -25,10 +25,12 @@ import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 public class RetrofitClient {
     private static Retrofit retrofit;
     private static Retrofit retrofitXML;
+    private static Retrofit retrofitTrans;
 
     //Define the base URL//
     private static final String BASE_URL = "https://192.168.43.163:8000/api/";
     private static final String BASE_URLXML = "http://integracja.gugik.gov.pl/cgi-bin/";
+    private static final String BASE_URLTrans = "http://epsg.io/";
 
     //Create the Retrofit instance//
 
@@ -44,6 +46,20 @@ public class RetrofitClient {
         }
 
         return retrofit;
+    }
+
+    public static Retrofit getRetrofitTransInstance() {
+        if (retrofitTrans == null) {
+            retrofitTrans = new retrofit2.Retrofit.Builder()
+                    .baseUrl(BASE_URLTrans)
+                    //Add the converter//
+                    .client(getUnsafeOkHttpClient().build())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    //Build the Retrofit instance//
+                    .build();
+        }
+
+        return retrofitTrans;
     }
 
     public static Retrofit getRetrofitInstanceXML() {

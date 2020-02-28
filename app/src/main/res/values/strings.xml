@@ -17,6 +17,7 @@
     <string name="sync_errorTokenApi">Błąd wczytywania(token)</string>
 
     <string name="main_logoTV">AgroSup</string>
+    <string name="main_treatmentBTN">Zabiegi</string>
     <string name="main_farmBTN">Gospodarstwo</string>
     <string name="main_settingsBTN">Ustawienia</string>
     <string name="main_logoutBTN">Wyloguj</string>
@@ -35,6 +36,11 @@
 
     <string name="summary_fuelTV">Paliwo:</string>
     <string name="summary_wholeFarmTV">Całe gospodarstwo:</string>
+
+    <string name="treatments_startBTN">Zacznij zabieg</string>
+    <string name="treatments_machniesBTN">Maszyny</string>
+    <string name="startTreatment_convertError">Błąd przy konwersji</string>
+    <string name="startTreatment_fetchParcelError">Błąd przy pobieraniu informacji</string>
 
 
 </resources>

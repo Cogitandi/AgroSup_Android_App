@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private Handler handler;
     AppDatabase db;
     User user;
+    private Button treatmentBTN;
     private Button farmBTN;
     private Button settingsBTN;
     private Button logoutBTN;
@@ -79,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initialize() {
+        treatmentBTN = findViewById(R.id.main_treatmentBTN);
         farmBTN = findViewById(R.id.main_farmBTN);
         settingsBTN = findViewById(R.id.main_settingsBTN);
         logoutBTN = findViewById(R.id.main_logoutBTN);
@@ -99,6 +101,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onClickListeners() {
+        treatmentBTN.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplication(), TreatmentsActivity.class);
+            startActivity(intent);
+        });
+
         farmBTN.setOnClickListener(v -> {
             Intent intent = new Intent(getApplication(), FarmActivity.class);
             startActivity(intent);
