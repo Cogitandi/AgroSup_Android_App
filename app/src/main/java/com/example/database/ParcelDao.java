@@ -17,6 +17,9 @@ public interface ParcelDao {
     @Query("SELECT * FROM parcel WHERE yearPlanId = :yearPlanId")
     List<Parcel> loadAllByYearPlan(int yearPlanId);
 
+    @Query("SELECT fieldId FROM parcel WHERE yearPlanId = :yearPlanId AND parcelNumber = :number")
+    int findFieldIdByParcelNumber(int yearPlanId, String number);
+
     @Query("DELETE FROM parcel WHERE yearPlanId = :yearPlanId")
     void deleteParcelsByYearPlanId(int yearPlanId);
 

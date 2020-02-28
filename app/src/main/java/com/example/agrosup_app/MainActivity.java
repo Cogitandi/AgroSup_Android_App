@@ -51,27 +51,6 @@ public class MainActivity extends AppCompatActivity {
         hideStatusBar();
     }
 
-    private void getParcelEwApi() {
-        GetData retro = RetrofitClient.getRetrofitInstanceXML().create(GetData.class);
-        Call<FeatureCollection> call = retro.getParcelEw("336441.78000000000,710330.51000000000,336447.78000000000,710336.51000000000");
-        call.enqueue(new Callback<FeatureCollection>() {
-            @Override
-            public void onResponse(Call<FeatureCollection> call, Response<FeatureCollection> response) {
-                Layer layer = response.body().getFeatureMember().getLayer();
-                for (Map.Entry<String, String> entry : layer.getMap().entrySet()) {
-                    Log.d(entry.getKey(), entry.getValue());
-                }
-
-            }
-
-
-            @Override
-            public void onFailure(Call<FeatureCollection> call, Throwable t) {
-                Log.d("blad", t.toString());
-            }
-        });
-    }
-
     private void getLoggedUser() {
         Thread thread = new Thread(() -> {
             user = db.userDao().findLogged(true);

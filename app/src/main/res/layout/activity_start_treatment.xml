@@ -4,20 +4,385 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#23FFEAD3"
     android:orientation="vertical"
     tools:context=".StartTreatmentActivity">
+
+
+    <TableLayout
+        android:id="@+id/streatment_dataTL"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:weightSum="1">
+
+            <com.blure.complexview.ComplexView
+                android:layout_width="150dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                app:radius="10dp"
+                app:shadow="true"
+                app:shadowSpread="1">
+
+                <com.blure.complexview.ComplexView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:color="#F3F3F3"
+                    app:radius="15dp">
+
+                    <TextView
+                        android:id="@+id/streatment_operatorTV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center"
+                        android:text="Michał Kowalski"
+                        android:textSize="30sp" />
+
+                    <TextView
+                        android:id="@+id/streatment_fieldTV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="55dp"
+                        android:gravity="center"
+                        android:text="Pole: za domem"
+                        android:textSize="20sp" />
+
+                </com.blure.complexview.ComplexView>
+            </com.blure.complexview.ComplexView>
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:weightSum="3">
+
+            <com.blure.complexview.ComplexView
+                android:layout_height="90dp"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                app:radius="10dp"
+                app:shadow="true"
+                app:shadowSpread="1">
+
+                <com.blure.complexview.ComplexView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:color="#F3F3F3"
+                    app:radius="15dp">
+
+                    <TextView
+                        android:id="@+id/streatment_clockTV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="45dp"
+                        android:gravity="center"
+                        android:text="14:44"
+                        android:textSize="20sp" />
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginTop="10dp"
+                        app:srcCompat="@drawable/ic_clock" />
+                </com.blure.complexview.ComplexView>
+            </com.blure.complexview.ComplexView>
+
+            <com.blure.complexview.ComplexView
+                android:layout_height="90dp"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                app:radius="10dp"
+                app:shadow="true"
+                app:shadowSpread="1">
+
+                <com.blure.complexview.ComplexView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:color="#F3F3F3"
+                    app:radius="15dp">
+
+                    <TextView
+                        android:id="@+id/streatment_fieldAreaTV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="45dp"
+                        android:gravity="center"
+                        android:text="14.56ha"
+                        android:textSize="20sp" />
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginTop="10dp"
+                        app:srcCompat="@drawable/ic_shape" />
+                </com.blure.complexview.ComplexView>
+            </com.blure.complexview.ComplexView>
+
+            <com.blure.complexview.ComplexView
+                android:layout_height="90dp"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                app:radius="10dp"
+                app:shadow="true"
+                app:shadowSpread="1">
+
+                <com.blure.complexview.ComplexView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:color="#F3F3F3"
+                    app:radius="15dp">
+
+                    <TextView
+                        android:id="@+id/streatment_tempTV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="45dp"
+                        android:gravity="center"
+                        android:text="23"
+                        android:textSize="20sp" />
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginTop="10dp"
+                        app:srcCompat="@drawable/ic_hot" />
+                </com.blure.complexview.ComplexView>
+            </com.blure.complexview.ComplexView>
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:weightSum="3">
+
+            <com.blure.complexview.ComplexView
+                android:layout_height="90dp"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                app:radius="10dp"
+                app:shadow="true"
+                app:shadowSpread="1">
+
+                <com.blure.complexview.ComplexView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:color="#F3F3F3"
+                    app:radius="15dp">
+
+                    <TextView
+                        android:id="@+id/streatment_fuelSumTV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="45dp"
+                        android:gravity="center"
+                        android:text="154.5 l"
+                        android:textSize="20sp" />
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginTop="10dp"
+                        app:srcCompat="@drawable/allfuel" />
+                </com.blure.complexview.ComplexView>
+            </com.blure.complexview.ComplexView>
+
+            <com.blure.complexview.ComplexView
+                android:layout_height="90dp"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                app:radius="10dp"
+                app:shadow="true"
+                app:shadowSpread="1">
+
+                <com.blure.complexview.ComplexView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:color="#F3F3F3"
+                    app:radius="15dp">
+
+                    <TextView
+                        android:id="@+id/streatment_cultivatedAreaTV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="45dp"
+                        android:gravity="center"
+                        android:text="50.55 ha"
+                        android:textSize="20sp" />
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginTop="10dp"
+                        app:srcCompat="@drawable/ic_tractor" />
+                </com.blure.complexview.ComplexView>
+            </com.blure.complexview.ComplexView>
+
+            <com.blure.complexview.ComplexView
+                android:layout_height="90dp"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                app:radius="10dp"
+                app:shadow="true"
+                app:shadowSpread="1">
+
+                <com.blure.complexview.ComplexView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:color="#F3F3F3"
+                    app:radius="15dp">
+
+                    <TextView
+                        android:id="@+id/streatment_temporaryFuelTV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="45dp"
+                        android:gravity="center"
+                        android:text="21.4 l/ha"
+                        android:textSize="20sp" />
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginTop="10dp"
+                        app:srcCompat="@drawable/fuel" />
+                </com.blure.complexview.ComplexView>
+            </com.blure.complexview.ComplexView>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:weightSum="2">
+
+            <com.blure.complexview.ComplexView
+                android:layout_height="90dp"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                app:radius="10dp"
+                app:shadow="true"
+                app:shadowSpread="1">
+
+                <com.blure.complexview.ComplexView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:color="#F3F3F3"
+                    app:radius="15dp">
+
+                    <TextView
+                        android:id="@+id/streatment_machineTV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="45dp"
+                        android:gravity="center"
+                        android:text="siewnik"
+                        android:textSize="20sp" />
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginTop="10dp"
+                        app:srcCompat="@drawable/ic_trailer" />
+                </com.blure.complexview.ComplexView>
+            </com.blure.complexview.ComplexView>
+
+            <com.blure.complexview.ComplexView
+                android:layout_height="90dp"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                app:radius="10dp"
+                app:shadow="true"
+                app:shadowSpread="1">
+
+                <com.blure.complexview.ComplexView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:color="#F3F3F3"
+                    app:radius="15dp">
+
+                    <TextView
+                        android:id="@+id/streatment_widthTV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="45dp"
+                        android:gravity="center"
+                        android:text="2.5 m"
+                        android:textSize="20sp" />
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginTop="10dp"
+                        app:srcCompat="@drawable/ic_width" />
+                </com.blure.complexview.ComplexView>
+            </com.blure.complexview.ComplexView>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:weightSum="1">
+
+
+            <Button
+                android:id="@+id/streatment_saveBTN"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_margin="20dp"
+                android:layout_weight="1"
+                android:text="Zapisz" />
+
+
+        </TableRow>
+
+    </TableLayout>
+
 
     <TextView
         android:id="@+id/test"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:text="TextView"
+        android:visibility="visible" />
 
     <Button
         android:id="@+id/startbtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
         android:text="start" />
 
     <Button

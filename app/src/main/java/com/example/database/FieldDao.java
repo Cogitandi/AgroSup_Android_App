@@ -17,6 +17,9 @@ public interface FieldDao {
     @Query("SELECT * FROM field WHERE yearPlanId = :yearPlanId")
     List<Field> loadAllByYearPlan(int yearPlanId);
 
+    @Query("SELECT * FROM field WHERE id = :id")
+    Field getFieldById(int id);
+
     @Query("DELETE FROM field WHERE yearPlanId = :yearPlanId")
     void deleteFieldsByYearPlanId(int yearPlanId);
 

@@ -10,6 +10,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +23,9 @@ import com.example.api.RetrofitClient;
 import com.example.apiModels.FeatureCollection;
 import com.example.apiModels.Layer;
 import com.example.apiModels.TransformationApi;
+import com.example.database.AppDatabase;
+import com.example.entities.Field;
+import com.example.entities.User;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -36,13 +40,29 @@ import retrofit2.Response;
 
 public class StartTreatmentActivity extends AppCompatActivity {
 
+    TableLayout dataTL;
+    TextView operatorTV;
+    TextView fieldTV;
+    TextView clockTV;
+    TextView fieldAreaTV;
+    TextView tempTV;
+    TextView fuelSumTV;
+    TextView cultivatedAreaTV;
+    TextView temporaryFuelTV;
+    TextView machineTV;
+    TextView widthTV;
+    Button savtBTN;
+
+    FusedLocationProviderClient fusedLocationClient;
+    LocationCallback locationCallback;
+    Handler handler;
+    GetData service;
+    AppDatabase db;
+    User user;
+
     TextView tv;
     Button startb;
     Button stopb;
-    GetData service;
-    private FusedLocationProviderClient fusedLocationClient;
-    private LocationCallback locationCallback;
-    Handler handler;
 
 
     @Override
@@ -71,6 +91,7 @@ public class StartTreatmentActivity extends AppCompatActivity {
         hideStatusBar();
     }
 
+    // Start gps
     private void startLocationUpdates() {
         LocationRequest locationRequest = new LocationRequest();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -79,6 +100,7 @@ public class StartTreatmentActivity extends AppCompatActivity {
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
     }
 
+    // Buttons actions
     private void onClickListeners() {
         startb.setOnClickListener(v -> {
             startLocationUpdates();
@@ -88,31 +110,43 @@ public class StartTreatmentActivity extends AppCompatActivity {
         });
     }
 
+    // Initialize variables
     private void initialize() {
+        dataTL = findViewById(R.id.streatment_dataTL);
+        operatorTV = findViewById(R.id.streatment_operatorTV);
+        fieldTV = findViewById(R.id.streatment_fieldTV);
+        clockTV = findViewById(R.id.streatment_clockTV);
+        fieldAreaTV = findViewById(R.id.streatment_fieldAreaTV);
+        tempTV = findViewById(R.id.streatment_tempTV);
+        fuelSumTV = findViewById(R.id.streatment_fuelSumTV);
+        cultivatedAreaTV = findViewById(R.id.streatment_cultivatedAreaTV);
+        temporaryFuelTV = findViewById(R.id.streatment_temporaryFuelTV);
+        machineTV = findViewById(R.id.streatment_machineTV);
+        widthTV = findViewById(R.id.streatment_widthTV);
+        savtBTN = findViewById(R.id.streatment_saveBTN);
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        service = RetrofitClient.getRetrofitTransInstance().create(GetData.class);
+        db = AppDatabase.getInstance(getApplicationContext());
+
+
         tv = findViewById(R.id.test);
         startb = findViewById(R.id.startbtn);
         stopb = findViewById(R.id.stopbtn);
-        service = RetrofitClient.getRetrofitTransInstance().create(GetData.class);
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        onClickListeners();
 
+        onClickListeners();
+        setLoggedUser();
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 if (locationResult == null) {
                     return;
                 }
-                Log.d("lokalizacja", "start");
                 for (Location location : locationResult.getLocations()) {
-                    Log.d("lokalizacja", "petla");
                     convertCordinates(location.getLongitude(), location.getLatitude());
                     tv.setText("precyzja:" + location.getAccuracy());
-                    // Update UI with location data
-                    // ...
                 }
             }
-
-            ;
         };
 
         handler = new Handler(getMainLooper()) {
@@ -126,6 +160,7 @@ public class StartTreatmentActivity extends AppCompatActivity {
 
     }
 
+    // Convert coordinates from epsg:4326 to epsg:2180
     private void convertCordinates(double x, double y) {
         Call<TransformationApi> call = service.getConverted(x, y, 0, 4326, 2180);
         call.enqueue(new Callback<TransformationApi>() {
@@ -144,23 +179,61 @@ public class StartTreatmentActivity extends AppCompatActivity {
         });
     }
 
+    // Action depends on code received by handler
     private void messageAction(Message msg) {
-        // conversion done send to fetch information about parcel
+        // conversion done send to fetch information about parcel FROM convertCordinates()
         if (msg.what == 1) {
             TransformationApi transformationApi = (TransformationApi) msg.obj;
             getParcelEwApi(transformationApi);
 
         }
-        //get parcel ewi object
+        //get parcel ewi object FROM getParcelEwApi()
         if (msg.what == 2) {
             Layer layer = (Layer) msg.obj;
+            findFieldByParcelNumber(layer.getMap().get("Numer działki"));
             for (Map.Entry<String, String> entry : layer.getMap().entrySet()) {
                 Log.d(entry.getKey(), entry.getValue());
             }
         }
+        //get field FROM findFieldByParcelNumber()
+        if (msg.what == 3) {
+            Field field = (Field) msg.obj;
+            Log.d("Pole", field.getName());
+
+        }
 
     }
 
+    // Send field object with typed parcel number to messageAction
+    private void findFieldByParcelNumber(String number) {
+        Thread thread = new Thread(() -> {
+            if (user != null) {
+                int fieldId = db.parcelDao().findFieldIdByParcelNumber(user.getSelectedYearPlanId(), number);
+                if (fieldId != 0) {
+                    Field field = db.fieldDao().getFieldById(fieldId);
+                    sendMessage(3, field);
+                }
+
+            }
+
+        });
+        thread.start();
+    }
+
+    private void createButton(String name) {
+        Button button = new Button(this);
+        button.setText(name);
+    }
+
+    // Fetch from db logged user
+    private void setLoggedUser() {
+        Thread thread = new Thread(() -> {
+            user = db.userDao().findLogged(true);
+        });
+        thread.start();
+    }
+
+    // Fetch parcel information
     private void getParcelEwApi(TransformationApi transformationApi) {
         GetData retro = RetrofitClient.getRetrofitInstanceXML().create(GetData.class);
         Call<FeatureCollection> call = retro.getParcelEw(transformationApi.getCoordinates());
@@ -181,6 +254,7 @@ public class StartTreatmentActivity extends AppCompatActivity {
         });
     }
 
+    // Send message to handler
     private <T> void sendMessage(int code, T object) {
         Message msg = new Message();
         msg.what = code;
