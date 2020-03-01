@@ -4,6 +4,7 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Transaction;
 
 import com.example.entities.Field;
 
@@ -22,6 +23,10 @@ public interface FieldDao {
 
     @Query("DELETE FROM field WHERE yearPlanId = :yearPlanId")
     void deleteFieldsByYearPlanId(int yearPlanId);
+
+    @Transaction
+    @Query("SELECT * FROM field where id = (:fieldId)" )
+    FieldWithParcels fieldsWithParcels(int fieldId);
 
     @Insert
     void insertAll(Field... field);

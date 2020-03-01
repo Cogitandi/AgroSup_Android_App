@@ -10,6 +10,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +26,7 @@ import com.example.apiModels.Layer;
 import com.example.apiModels.TransformationApi;
 import com.example.database.AppDatabase;
 import com.example.entities.Field;
+import com.example.entities.Operator;
 import com.example.entities.User;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -32,6 +34,11 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -40,6 +47,8 @@ import retrofit2.Response;
 
 public class StartTreatmentActivity extends AppCompatActivity {
 
+    LinearLayout mainLayout;
+    LinearLayout fieldListLayout;
     TableLayout dataTL;
     TextView operatorTV;
     TextView fieldTV;
@@ -51,7 +60,7 @@ public class StartTreatmentActivity extends AppCompatActivity {
     TextView temporaryFuelTV;
     TextView machineTV;
     TextView widthTV;
-    Button savtBTN;
+    Button saveBTN;
 
     FusedLocationProviderClient fusedLocationClient;
     LocationCallback locationCallback;
@@ -59,6 +68,11 @@ public class StartTreatmentActivity extends AppCompatActivity {
     GetData service;
     AppDatabase db;
     User user;
+    Operator choosenOperator;
+
+
+    List<Field> foundFields;
+    Field choosenField;
 
     TextView tv;
     Button startb;
@@ -83,12 +97,20 @@ public class StartTreatmentActivity extends AppCompatActivity {
 
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 2);
+
+        startLocationUpdates();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         hideStatusBar();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        fusedLocationClient.removeLocationUpdates(locationCallback);
     }
 
     // Start gps
@@ -108,10 +130,15 @@ public class StartTreatmentActivity extends AppCompatActivity {
         stopb.setOnClickListener(v -> {
             fusedLocationClient.removeLocationUpdates(locationCallback);
         });
+        saveBTN.setOnClickListener(v -> {
+            recreate();
+        });
     }
 
     // Initialize variables
     private void initialize() {
+        mainLayout = findViewById(R.id.streatment_mainLayout);
+        fieldListLayout = findViewById(R.id.streatment_fieldListLayout);
         dataTL = findViewById(R.id.streatment_dataTL);
         operatorTV = findViewById(R.id.streatment_operatorTV);
         fieldTV = findViewById(R.id.streatment_fieldTV);
@@ -123,11 +150,14 @@ public class StartTreatmentActivity extends AppCompatActivity {
         temporaryFuelTV = findViewById(R.id.streatment_temporaryFuelTV);
         machineTV = findViewById(R.id.streatment_machineTV);
         widthTV = findViewById(R.id.streatment_widthTV);
-        savtBTN = findViewById(R.id.streatment_saveBTN);
+        saveBTN = findViewById(R.id.streatment_saveBTN);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         service = RetrofitClient.getRetrofitTransInstance().create(GetData.class);
         db = AppDatabase.getInstance(getApplicationContext());
+
+
+        foundFields = new ArrayList<>();
 
 
         tv = findViewById(R.id.test);
@@ -135,7 +165,7 @@ public class StartTreatmentActivity extends AppCompatActivity {
         stopb = findViewById(R.id.stopbtn);
 
         onClickListeners();
-        setLoggedUser();
+        fetchDB();
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -181,7 +211,7 @@ public class StartTreatmentActivity extends AppCompatActivity {
 
     // Action depends on code received by handler
     private void messageAction(Message msg) {
-        // conversion done send to fetch information about parcel FROM convertCordinates()
+        // conversion done - send to fetch information about parcel FROM convertCordinates()
         if (msg.what == 1) {
             TransformationApi transformationApi = (TransformationApi) msg.obj;
             getParcelEwApi(transformationApi);
@@ -198,10 +228,31 @@ public class StartTreatmentActivity extends AppCompatActivity {
         //get field FROM findFieldByParcelNumber()
         if (msg.what == 3) {
             Field field = (Field) msg.obj;
-            Log.d("Pole", field.getName());
+            if (isNotInArray(foundFields, field)) {
+                foundFields.add(field);
+                Button fieldButton = createButton(field.getName());
+                fieldButton.setOnClickListener(v -> {
+                    // remove location
+                    fusedLocationClient.removeLocationUpdates(locationCallback);
+                    choosenField = field;
+                    fieldListLayout.setVisibility(View.GONE);
+                    dataTL.setVisibility(View.VISIBLE);
+                    updateUI();
+                });
+                fieldListLayout.addView(fieldButton);
+            }
 
         }
 
+    }
+
+    private boolean isNotInArray(List<Field> fieldList, Field field) {
+        for (Field item : fieldList) {
+            if (item == field) {
+                return false;
+            }
+        }
+        return true;
     }
 
     // Send field object with typed parcel number to messageAction
@@ -220,15 +271,43 @@ public class StartTreatmentActivity extends AppCompatActivity {
         thread.start();
     }
 
-    private void createButton(String name) {
+    private Button createButton(String name) {
         Button button = new Button(this);
         button.setText(name);
+        return button;
     }
 
-    // Fetch from db logged user
-    private void setLoggedUser() {
+    private void updateUI() {
+        String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+        setFieldAreaTV(choosenField);
+
+        clockTV.setText(currentTime);
+        operatorTV.setText(choosenOperator.toString());
+        fieldTV.setText(choosenField.getName());
+        tempTV.setText("23"+ (char) 0x00B0);
+//        fuelSumTV.setText("");
+//        cultivatedAreaTV.setText("");
+//        temporaryFuelTV.setText("");
+//        machineTV.setText("");
+//        widthTV.setText("");
+    }
+
+    // update fieldAreaTV
+    private void setFieldAreaTV(Field field) {
+        Thread thread = new Thread(() -> {
+            float area = db.fieldDao().fieldsWithParcels(field.getId()).getFieldArea();
+            runOnUiThread(() -> {
+                fieldAreaTV.setText(area + "");
+            });
+        });
+        thread.start();
+    }
+
+    // set user and choosen operator
+    private void fetchDB() {
         Thread thread = new Thread(() -> {
             user = db.userDao().findLogged(true);
+            choosenOperator = db.operatorDao().findOperatorById(user.getSelectedOperatorId());
         });
         thread.start();
     }

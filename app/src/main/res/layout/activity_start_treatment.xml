@@ -2,11 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/streatment_mainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".StartTreatmentActivity">
 
+
+    <LinearLayout
+        android:id="@+id/streatment_fieldListLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"></LinearLayout>
 
     <TableLayout
         android:id="@+id/streatment_dataTL"
@@ -25,13 +32,15 @@
                 android:layout_gravity="center"
                 android:layout_margin="10dp"
                 android:layout_weight="1"
-                app:radius="10dp"
+                app:radius="15dp"
                 app:shadow="true"
+                app:shadowAlpha="90"
                 app:shadowSpread="1">
 
                 <com.blure.complexview.ComplexView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_margin="1dp"
                     app:color="#F3F3F3"
                     app:radius="15dp">
 
@@ -69,8 +78,9 @@
                 android:layout_height="90dp"
                 android:layout_margin="10dp"
                 android:layout_weight="1"
-                app:radius="10dp"
+                app:radius="15dp"
                 app:shadow="true"
+                app:shadowAlpha="90"
                 app:shadowSpread="1">
 
                 <com.blure.complexview.ComplexView
@@ -103,8 +113,9 @@
                 android:layout_height="90dp"
                 android:layout_margin="10dp"
                 android:layout_weight="1"
-                app:radius="10dp"
+                app:radius="15dp"
                 app:shadow="true"
+                app:shadowAlpha="90"
                 app:shadowSpread="1">
 
                 <com.blure.complexview.ComplexView
@@ -137,8 +148,9 @@
                 android:layout_height="90dp"
                 android:layout_margin="10dp"
                 android:layout_weight="1"
-                app:radius="10dp"
+                app:radius="15dp"
                 app:shadow="true"
+                app:shadowAlpha="90"
                 app:shadowSpread="1">
 
                 <com.blure.complexview.ComplexView
@@ -178,8 +190,9 @@
                 android:layout_height="90dp"
                 android:layout_margin="10dp"
                 android:layout_weight="1"
-                app:radius="10dp"
+                app:radius="15dp"
                 app:shadow="true"
+                app:shadowAlpha="90"
                 app:shadowSpread="1">
 
                 <com.blure.complexview.ComplexView
@@ -212,8 +225,9 @@
                 android:layout_height="90dp"
                 android:layout_margin="10dp"
                 android:layout_weight="1"
-                app:radius="10dp"
+                app:radius="15dp"
                 app:shadow="true"
+                app:shadowAlpha="90"
                 app:shadowSpread="1">
 
                 <com.blure.complexview.ComplexView
@@ -223,14 +237,15 @@
                     app:radius="15dp">
 
                     <TextView
-                        android:id="@+id/streatment_cultivatedAreaTV"
+                        android:id="@+id/streatment_speedTV"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
                         android:layout_marginTop="45dp"
                         android:gravity="center"
-                        android:text="50.55 ha"
-                        android:textSize="20sp" />
+                        android:text="11 km/h"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
 
                     <ImageView
                         android:layout_width="match_parent"
@@ -238,7 +253,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:layout_marginTop="10dp"
-                        app:srcCompat="@drawable/ic_tractor" />
+                        app:srcCompat="@drawable/ic_speedometer" />
                 </com.blure.complexview.ComplexView>
             </com.blure.complexview.ComplexView>
 
@@ -246,8 +261,9 @@
                 android:layout_height="90dp"
                 android:layout_margin="10dp"
                 android:layout_weight="1"
-                app:radius="10dp"
+                app:radius="15dp"
                 app:shadow="true"
+                app:shadowAlpha="90"
                 app:shadowSpread="1">
 
                 <com.blure.complexview.ComplexView
@@ -280,14 +296,15 @@
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:weightSum="2">
+            android:weightSum="3">
 
             <com.blure.complexview.ComplexView
                 android:layout_height="90dp"
                 android:layout_margin="10dp"
                 android:layout_weight="1"
-                app:radius="10dp"
+                app:radius="15dp"
                 app:shadow="true"
+                app:shadowAlpha="90"
                 app:shadowSpread="1">
 
                 <com.blure.complexview.ComplexView
@@ -320,8 +337,44 @@
                 android:layout_height="90dp"
                 android:layout_margin="10dp"
                 android:layout_weight="1"
-                app:radius="10dp"
+                app:radius="15dp"
                 app:shadow="true"
+                app:shadowAlpha="90"
+                app:shadowSpread="1">
+
+                <com.blure.complexview.ComplexView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:color="#F3F3F3"
+                    app:radius="15dp">
+
+                    <TextView
+                        android:id="@+id/streatment_cultivatedAreaTV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="45dp"
+                        android:gravity="center"
+                        android:text="50.55 ha"
+                        android:textSize="20sp" />
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginTop="10dp"
+                        app:srcCompat="@drawable/ic_tractor" />
+                </com.blure.complexview.ComplexView>
+            </com.blure.complexview.ComplexView>
+
+            <com.blure.complexview.ComplexView
+                android:layout_height="90dp"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                app:radius="15dp"
+                app:shadow="true"
+                app:shadowAlpha="90"
                 app:shadowSpread="1">
 
                 <com.blure.complexview.ComplexView

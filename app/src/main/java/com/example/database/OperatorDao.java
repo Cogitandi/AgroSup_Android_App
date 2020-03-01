@@ -21,8 +21,8 @@ public interface OperatorDao {
     @Query("DELETE FROM operator WHERE yearPlanId = :yearPlanId")
     void deleteOperatorsByYearPlanId(int yearPlanId);
 
-    @Query("SELECT * FROM operator WHERE yearPlanId = :yearPlanId AND id = :id")
-    Operator findOperatorById(int yearPlanId, int id);
+    @Query("SELECT * FROM operator WHERE id = :id")
+    Operator findOperatorById(int id);
 
 
     @Insert
