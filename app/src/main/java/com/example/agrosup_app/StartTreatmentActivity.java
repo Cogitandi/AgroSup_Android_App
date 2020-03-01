@@ -26,6 +26,7 @@ import com.example.apiModels.Layer;
 import com.example.apiModels.TransformationApi;
 import com.example.database.AppDatabase;
 import com.example.entities.Field;
+import com.example.entities.Machine;
 import com.example.entities.Operator;
 import com.example.entities.User;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -232,6 +233,8 @@ public class StartTreatmentActivity extends AppCompatActivity {
                 foundFields.add(field);
                 Button fieldButton = createButton(field.getName());
                 fieldButton.setOnClickListener(v -> {
+                    Machine machine = new Machine("Pług", 165);
+                    user.setSelectedMachine(machine);
                     // remove location
                     fusedLocationClient.removeLocationUpdates(locationCallback);
                     choosenField = field;
@@ -284,12 +287,12 @@ public class StartTreatmentActivity extends AppCompatActivity {
         clockTV.setText(currentTime);
         operatorTV.setText(choosenOperator.toString());
         fieldTV.setText(choosenField.getName());
-        tempTV.setText("23"+ (char) 0x00B0);
+        tempTV.setText("23" + (char) 0x00B0);
 //        fuelSumTV.setText("");
 //        cultivatedAreaTV.setText("");
 //        temporaryFuelTV.setText("");
-//        machineTV.setText("");
-//        widthTV.setText("");
+        machineTV.setText(user.getSelectedMachine().getName());
+        widthTV.setText(user.getSelectedMachine().getWidthM());
     }
 
     // update fieldAreaTV

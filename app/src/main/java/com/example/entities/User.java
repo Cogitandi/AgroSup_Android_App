@@ -3,6 +3,11 @@ package com.example.entities;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
+import com.example.database.DatabaseConverters;
+
+import java.util.List;
 
 @Entity
 public class User {
@@ -27,6 +32,12 @@ public class User {
 
     @ColumnInfo(name = "selectedOperator")
     private int selectedOperatorId;
+
+    @TypeConverters(DatabaseConverters.class)
+    private Machine selectedMachine;
+
+    @TypeConverters(DatabaseConverters.class)
+    private List<Machine> machineList;
 
     public int getId() {
         return id;
@@ -82,6 +93,22 @@ public class User {
 
     public void setSelectedOperatorId(int selectedOperatorId) {
         this.selectedOperatorId = selectedOperatorId;
+    }
+
+    public Machine getSelectedMachine() {
+        return selectedMachine;
+    }
+
+    public void setSelectedMachine(Machine selectedMachine) {
+        this.selectedMachine = selectedMachine;
+    }
+
+    public List<Machine> getMachineList() {
+        return machineList;
+    }
+
+    public void setMachineList(List<Machine> machineList) {
+        this.machineList = machineList;
     }
 
     public User(int id, String email, String password) {
