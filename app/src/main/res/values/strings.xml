@@ -43,4 +43,8 @@
     <string name="startTreatment_fetchParcelError">Błąd przy pobieraniu informacji</string>
 
 
+    <string name="startTreatment_deviceNotSupportBluetooth">Twoje urządznie nie obsługuje bluetooth</string>
+    <string name="startTreatment_bluetoothNotAccepted">Musisz włączyć bluetooth</string>
+
+
 </resources>

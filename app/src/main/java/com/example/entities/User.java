@@ -39,6 +39,7 @@ public class User {
     @TypeConverters(DatabaseConverters.class)
     private List<Machine> machineList;
 
+
     public int getId() {
         return id;
     }

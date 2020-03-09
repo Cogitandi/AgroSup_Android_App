@@ -1,6 +1,12 @@
 package com.example.agrosup_app;
 
 import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -15,6 +21,7 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -24,6 +31,9 @@ import com.example.api.RetrofitClient;
 import com.example.apiModels.FeatureCollection;
 import com.example.apiModels.Layer;
 import com.example.apiModels.TransformationApi;
+import com.example.bluetooth.BluetoothDataModel;
+import com.example.bluetooth.ConnectThread;
+import com.example.bluetooth.ConnectedThread;
 import com.example.database.AppDatabase;
 import com.example.entities.Field;
 import com.example.entities.Machine;
@@ -40,7 +50,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -55,12 +65,13 @@ public class StartTreatmentActivity extends AppCompatActivity {
     TextView fieldTV;
     TextView clockTV;
     TextView fieldAreaTV;
-    TextView tempTV;
-    TextView fuelSumTV;
+    TextView temperatureTV;
+    TextView totalCombustionTV;
+    TextView velocityTV;
+    TextView currentCombustionTV;
+    TextView machineNameTV;
     TextView cultivatedAreaTV;
-    TextView temporaryFuelTV;
-    TextView machineTV;
-    TextView widthTV;
+    TextView machineWidthTV;
     Button saveBTN;
 
     FusedLocationProviderClient fusedLocationClient;
@@ -79,12 +90,22 @@ public class StartTreatmentActivity extends AppCompatActivity {
     Button startb;
     Button stopb;
 
+    // BT
+    ConnectThread connectThread;
+    ConnectedThread connectedThread;
+    private BroadcastReceiver receiver;
+    boolean receiverRegistered = false;
+    BluetoothDevice bluetoothDevice;
+    BluetoothAdapter bluetoothAdapter;
+    String moduleName = "HC-05";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_treatment);
         initialize();
+        bluetoothConnection();
+
 
         boolean permissionAccessCoarseLocationApproved = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
 
@@ -99,7 +120,7 @@ public class StartTreatmentActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 2);
 
-        startLocationUpdates();
+
     }
 
     @Override
@@ -112,6 +133,70 @@ public class StartTreatmentActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         fusedLocationClient.removeLocationUpdates(locationCallback);
+        if (receiverRegistered) {
+            unregisterReceiver(receiver);
+        }
+        if (connectThread != null) {
+            connectThread.cancel();
+        }
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_CANCELED) {
+            Toast.makeText(getApplication(), getString(R.string.startTreatment_bluetoothNotAccepted), Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
+    }
+
+    // Bluetoth connection
+    private void bluetoothConnection() {
+        checkBluetoothAvailable();
+        if (!(isModuleInPairedDevices())) {
+            // Register for broadcasts when a device is discovered.
+            IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+            registerReceiver(receiver, filter);
+            receiverRegistered = true;
+            Log.d("BT", "szukam");
+        } else {
+            sendMessage(4, new String("found"));
+        }
+    }
+
+    // Check bluetooth
+    private void checkBluetoothAvailable() {
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (bluetoothAdapter == null) {
+            // Device doesn't support Bluetooth
+            Toast.makeText(getApplication(), getString(R.string.startTreatment_deviceNotSupportBluetooth), Toast.LENGTH_SHORT).show();
+            finish();
+        } else {
+            // Enable bluetooth
+            if (!bluetoothAdapter.isEnabled()) {
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBtIntent, 1);
+            }
+        }
+    }
+
+    // check in paired devices
+    private boolean isModuleInPairedDevices() {
+        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+        if (pairedDevices.size() > 0) {
+            // There are paired devices. Get the name and address of each paired device.
+            for (BluetoothDevice device : pairedDevices) {
+                String deviceName = device.getName();
+                String deviceHardwareAddress = device.getAddress(); // MAC address
+                if (deviceName.equals(moduleName)) {
+                    bluetoothDevice = device;
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     // Start gps
@@ -145,12 +230,13 @@ public class StartTreatmentActivity extends AppCompatActivity {
         fieldTV = findViewById(R.id.streatment_fieldTV);
         clockTV = findViewById(R.id.streatment_clockTV);
         fieldAreaTV = findViewById(R.id.streatment_fieldAreaTV);
-        tempTV = findViewById(R.id.streatment_tempTV);
-        fuelSumTV = findViewById(R.id.streatment_fuelSumTV);
+        temperatureTV = findViewById(R.id.streatment_temperatureTV);
+        totalCombustionTV = findViewById(R.id.streatment_totalCombustionTV);
+        velocityTV = findViewById(R.id.streatment_velocityTV);
+        currentCombustionTV = findViewById(R.id.streatment_currentCombustionTV);
+        machineNameTV = findViewById(R.id.streatment_machineNameTV);
         cultivatedAreaTV = findViewById(R.id.streatment_cultivatedAreaTV);
-        temporaryFuelTV = findViewById(R.id.streatment_temporaryFuelTV);
-        machineTV = findViewById(R.id.streatment_machineTV);
-        widthTV = findViewById(R.id.streatment_widthTV);
+        machineWidthTV = findViewById(R.id.streatment_machineWidthTV);
         saveBTN = findViewById(R.id.streatment_saveBTN);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -166,7 +252,7 @@ public class StartTreatmentActivity extends AppCompatActivity {
         stopb = findViewById(R.id.stopbtn);
 
         onClickListeners();
-        fetchDB();
+
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -185,6 +271,29 @@ public class StartTreatmentActivity extends AppCompatActivity {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 messageAction(msg);
+            }
+        };
+
+        // Create a BroadcastReceiver for ACTION_FOUND.
+        receiver = new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                    // Discovery has found a device. Get the BluetoothDevice
+                    // object and its info from the Intent.
+                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    String deviceName = device.getName();
+                    String deviceHardwareAddress = device.getAddress(); // MAC address
+                    Log.d("BT nazwa", deviceName + "x");
+                    if (deviceName.equals(moduleName)) {
+                        bluetoothDevice = device;
+                        if (receiverRegistered) {
+                            unregisterReceiver(receiver);
+                        }
+                        sendMessage(4, new String("found"));
+                    }
+
+                }
             }
         };
 
@@ -215,16 +324,17 @@ public class StartTreatmentActivity extends AppCompatActivity {
         // conversion done - send to fetch information about parcel FROM convertCordinates()
         if (msg.what == 1) {
             TransformationApi transformationApi = (TransformationApi) msg.obj;
-            getParcelEwApi(transformationApi);
+            if (transformationApi != null) getParcelEwApi(transformationApi);
 
         }
         //get parcel ewi object FROM getParcelEwApi()
         if (msg.what == 2) {
             Layer layer = (Layer) msg.obj;
+            Log.d("obj", layer.toString());
             findFieldByParcelNumber(layer.getMap().get("Numer działki"));
-            for (Map.Entry<String, String> entry : layer.getMap().entrySet()) {
-                Log.d(entry.getKey(), entry.getValue());
-            }
+//            for (Map.Entry<String, String> entry : layer.getMap().entrySet()) {
+//                Log.d(entry.getKey(), entry.getValue());
+//            }
         }
         //get field FROM findFieldByParcelNumber()
         if (msg.what == 3) {
@@ -233,17 +343,47 @@ public class StartTreatmentActivity extends AppCompatActivity {
                 foundFields.add(field);
                 Button fieldButton = createButton(field.getName());
                 fieldButton.setOnClickListener(v -> {
+                    Log.d("wiadomosc", "przed");
                     Machine machine = new Machine("Pług", 165);
+                    connectedThread.write(new String("C"+machine.getWidth()+",D"+user.getAmountImpuls()+",00000").getBytes());
+                    Log.d("wiadomosc", "C"+machine.getWidth()+",D"+user.getAmountImpuls()+",00000");
                     user.setSelectedMachine(machine);
                     // remove location
                     fusedLocationClient.removeLocationUpdates(locationCallback);
                     choosenField = field;
-                    fieldListLayout.setVisibility(View.GONE);
-                    dataTL.setVisibility(View.VISIBLE);
                     updateUI();
                 });
                 fieldListLayout.addView(fieldButton);
             }
+
+        }
+        // found bluetooth device
+        if (msg.what == 4) {
+            Log.d("BT", bluetoothDevice.getAddress().toString());
+            connectThread = new ConnectThread(bluetoothDevice, bluetoothAdapter, handler);
+            connectThread.start();
+
+        }
+        // connection ok
+        if (msg.what == 5) {
+            connectedThread = (ConnectedThread) msg.obj;
+            fetchDB();
+            startLocationUpdates();
+        }
+
+        if (msg.what == 6) {
+
+            BluetoothDataModel bluetoothDataModel = (BluetoothDataModel) msg.obj;
+//            Log.d("temp", bluetoothDataModel.getTemperature() + "st");
+//            Log.d("temp", bluetoothDataModel.getHumidity() + "st");
+            String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+            clockTV.setText(currentTime);
+            temperatureTV.setText(bluetoothDataModel.getTemperature() + ""+(char)176+"C");
+            totalCombustionTV.setText(bluetoothDataModel.getTotalCombustion() + " l");
+            velocityTV.setText(bluetoothDataModel.getVelocity()+" km/h");
+            currentCombustionTV.setText(bluetoothDataModel.getCurrentCombustion() + " l/ha");
+            cultivatedAreaTV.setText(bluetoothDataModel.getArea() + " ha");
+
 
         }
 
@@ -281,27 +421,28 @@ public class StartTreatmentActivity extends AppCompatActivity {
     }
 
     private void updateUI() {
-        String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+        fieldListLayout.setVisibility(View.GONE);
+        dataTL.setVisibility(View.VISIBLE);
         setFieldAreaTV(choosenField);
 
-        clockTV.setText(currentTime);
         operatorTV.setText(choosenOperator.toString());
         fieldTV.setText(choosenField.getName());
-        tempTV.setText("23" + (char) 0x00B0);
-//        fuelSumTV.setText("");
-//        cultivatedAreaTV.setText("");
-//        temporaryFuelTV.setText("");
-        machineTV.setText(user.getSelectedMachine().getName());
-        widthTV.setText(user.getSelectedMachine().getWidthM());
+        machineNameTV.setText(user.getSelectedMachine().getName());
+        machineWidthTV.setText(user.getSelectedMachine().getWidthM()+" m");
     }
 
     // update fieldAreaTV
     private void setFieldAreaTV(Field field) {
         Thread thread = new Thread(() -> {
-            float area = db.fieldDao().fieldsWithParcels(field.getId()).getFieldArea();
-            runOnUiThread(() -> {
-                fieldAreaTV.setText(area + "");
-            });
+            try {
+                float area = db.fieldDao().fieldsWithParcels(field.getId()).getFieldArea();
+                runOnUiThread(() -> {
+                    fieldAreaTV.setText(area + "");
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         });
         thread.start();
     }
@@ -311,6 +452,7 @@ public class StartTreatmentActivity extends AppCompatActivity {
         Thread thread = new Thread(() -> {
             user = db.userDao().findLogged(true);
             choosenOperator = db.operatorDao().findOperatorById(user.getSelectedOperatorId());
+            sendMessage(3,new Field(0,"brak", user.getSelectedYearPlanId(),"brak"));
         });
         thread.start();
     }
