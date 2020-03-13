@@ -425,23 +425,4 @@
     </TableLayout>
 
 
-    <TextView
-        android:id="@+id/test"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="TextView"
-        android:visibility="visible" />
-
-    <Button
-        android:id="@+id/startbtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-
-        android:text="start" />
-
-    <Button
-        android:id="@+id/stopbtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="stop" />
 </LinearLayout>

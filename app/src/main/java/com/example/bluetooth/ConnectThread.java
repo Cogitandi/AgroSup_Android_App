@@ -47,6 +47,8 @@ public class ConnectThread extends Thread {
             // Unable to connect; close the socket and return.
             try {
                 mmSocket.close();
+                Log.d("BT",connectException.toString());
+                Log.d("BT","zamykam");
             } catch (IOException closeException) {
                 Log.e(TAG, "Could not close the client socket", closeException);
             }

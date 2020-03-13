@@ -1,8 +1,19 @@
 package com.example.entities;
 
+import android.widget.Toast;
+
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+
+import com.example.agrosup_app.R;
+import com.example.api.GetData;
+import com.example.api.RetrofitClient;
+import com.example.apiModels.TransformationApi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 @Entity
 public class Field {
@@ -58,4 +69,5 @@ public class Field {
         this.yearPlanId = yearPlanId;
         this.plantName = plantName;
     }
+
 }

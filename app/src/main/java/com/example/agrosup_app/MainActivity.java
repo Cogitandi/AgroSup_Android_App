@@ -18,6 +18,7 @@ import com.example.apiModels.Attribut;
 import com.example.apiModels.FeatureCollection;
 import com.example.apiModels.Layer;
 import com.example.database.AppDatabase;
+import com.example.entities.Treatment;
 import com.example.entities.User;
 import com.example.entities.YearPlan;
 
@@ -67,6 +68,12 @@ public class MainActivity extends AppCompatActivity {
         db = AppDatabase.getInstance(getApplicationContext());
         getLoggedUser();
 
+        new Thread(() -> {
+            for(Treatment item: db.treatmentDao().getAll()) {
+                Log.d("logi",item.getId()+","+item.getStartDate());
+            }
+
+        }).start();
         handler = new Handler(getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {

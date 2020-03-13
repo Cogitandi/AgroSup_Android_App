@@ -63,14 +63,18 @@ public class ConnectedThread extends Thread {
         // Keep listening to the InputStream until an exception occurs.
         while (true) {
             try {
+
                 Arrays.fill(mmBuffer, (byte)0);
                 // Read from the InputStream.
                 numBytes = mmInStream.read(mmBuffer);
+                Log.d("BT", "bajtow:"+numBytes);
+
 //                    // Send the obtained bytes to the UI activity.
 //                    Message readMsg = handler.obtainMessage(
 //                            MessageConstants.MESSAGE_READ, numBytes, -1,
 //                            mmBuffer);
 //                    readMsg.sendToTarget();
+                Log.d("BT", "data:"+data);
                 data = checkData(mmBuffer,numBytes,data);
                 //Log.d("wiad",new String(mmBuffer, Charset.defaultCharset())+","+numBytes);
                 //sendMessage(5,);
@@ -85,7 +89,7 @@ public class ConnectedThread extends Thread {
     public String checkData(byte[] array, int size, String data) {
         String input = new String(mmBuffer, Charset.defaultCharset());
         StringBuilder output = new StringBuilder(data);
-        //Log.d("BT","out: "+output.toString());
+        Log.d("BT","wejscie: "+data);
         for(int i=0;i<input.length();i++) {
             //Log.d("BT", "znak"+input.charAt(i)+","+array[i]);
             if(!( (input.charAt(i) >= 48 && input.charAt(i) <= 57) || input.charAt(i) == 44 || input.charAt(i) == 83 || input.charAt(i) == 75)) {
@@ -109,7 +113,7 @@ public class ConnectedThread extends Thread {
     public void write(byte[] bytes) {
         try {
             mmOutStream.write(bytes);
-
+            Log.d("BT", "wyslalem");
             // Share the sent message with the UI activity.
 //            Message writtenMsg = handler.obtainMessage(
 //                    MessageConstants.MESSAGE_WRITE, -1, -1, mmBuffer);
