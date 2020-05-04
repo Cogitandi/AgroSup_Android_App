@@ -7,31 +7,24 @@ public class OperatorApi {
     private Integer id;
     @SerializedName("firstName")
     private String firstName;
+    @SerializedName("surname")
+    private String surname;
+    @SerializedName("yearPlan")
+    private String yearPlan;
 
     public Integer getId() {
         return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
     public String getSurname() {
         return surname;
     }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
+    public String getYearPlan() {
+        return yearPlan;
     }
-
-    @SerializedName("surname")
-    private String surname;
 }

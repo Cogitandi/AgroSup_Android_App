@@ -1,19 +1,12 @@
 package com.example.entities;
 
-import android.widget.Toast;
+import android.util.Log;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import com.example.agrosup_app.R;
-import com.example.api.GetData;
-import com.example.api.RetrofitClient;
-import com.example.apiModels.TransformationApi;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import com.example.apiModels.FieldApi;
 
 @Entity
 public class Field {
@@ -29,6 +22,10 @@ public class Field {
 
     @ColumnInfo(name = "plantName")
     private String plantName;
+
+    @ColumnInfo(name = "plantVariety")
+    private String plantVariety;
+
 
     public int getId() {
         return id;
@@ -46,7 +43,6 @@ public class Field {
         this.name = name;
     }
 
-
     public int getYearPlanId() {
         return yearPlanId;
     }
@@ -63,11 +59,28 @@ public class Field {
         this.plantName = plantName;
     }
 
-    public Field(int id, String name, int yearPlanId, String plantName) {
+    public String getPlantVariety() {
+        return plantVariety;
+    }
+
+    public void setPlantVariety(String plantVariety) {
+        this.plantVariety = plantVariety;
+    }
+
+    public Field(FieldApi fieldApi) {
+        this.id = fieldApi.getId();
+        this.name = fieldApi.getName();
+        this.plantName = fieldApi.getPlant();
+        this.plantVariety = fieldApi.getPlantVariety();
+        this.yearPlanId = new Integer(fieldApi.getYearPlan().substring(16));
+        Log.d("test", fieldApi.getYearPlan() + "," + yearPlanId);
+    }
+
+    public Field(int id, String name, int yearPlanId, String plantName, String plantVariety) {
         this.id = id;
         this.name = name;
         this.yearPlanId = yearPlanId;
         this.plantName = plantName;
+        this.plantVariety = plantVariety;
     }
-
 }

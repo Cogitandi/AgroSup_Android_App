@@ -54,6 +54,10 @@ public class Synchronizer {
     private int previousSelectedYearPlanId;
     private int previousSelectedOperatorId;
 
+    private boolean syncParcels = false;
+    private boolean syncFields = false;
+    private boolean syncOperators = false;
+
 
     // msg
     // 6 - fail synchronization
@@ -69,41 +73,39 @@ public class Synchronizer {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 if (msg.what == 1) {
+                    // successfull synchronize user
                     receivedRequest++;
                     getYearPlansApi();
                 }
                 if (msg.what == 2) {
-                    lastYearPlanId = yearPlans.get(yearPlans.size() - 1).getId();
+                    // successfull synchronize yearplans
+                    //lastYearPlanId = yearPlans.get(yearPlans.size() - 1).getId();
                     receivedRequest++;
-                    for (YearPlan item : yearPlans) {
-                        if (!error) {
-                            getOperatorsApi(item.getId());
-                            getFieldsApi(item.getId());
-                            getParcelsApi(item.getId());
-                        } else {
-                            break;
-                        }
-
-                    }
+                    getOperatorsApi();
+                    getFieldsApi();
+                    getParcelsApi();
                 }
                 if (msg.what == 3) {
-                    receivedRequest++;
+                    // sync operators
+                    syncOperators = true;
+                    if (syncOperators && syncFields && syncParcels) sendMessageToMainActivity(1);
                 }
                 if (msg.what == 4) {
-                    receivedRequest++;
+                    syncFields = true;
+                    if (syncOperators && syncFields && syncParcels) sendMessageToMainActivity(1);
                 }
                 if (msg.what == 5) {
-                    receivedRequest++;
-                    if (sendRequest == receivedRequest && currentYearPlanId == lastYearPlanId) {
-                        sendMessageToMainActivity(1);
-                    }
+                    syncParcels = true;
+                    if (syncOperators && syncFields && syncParcels) sendMessageToMainActivity(1);
 
                 }
                 if (msg.what == 6) {
+                    // error with connection
                     error = true;
                     sendMessageToMainActivity(2);
                 }
                 if (msg.what == 7) {
+                    // fail get token
                     sendMessageToMainActivity(3);
                 }
 
@@ -131,6 +133,7 @@ public class Synchronizer {
             @Override
             public void onFailure(@NotNull Call<UserApi> call, @NotNull Throwable t) {
                 sendMessageSync(6);
+                Log.d("test", t.toString());
                 Toast.makeText(activity, activity.getString(R.string.sync_errorServerApi), Toast.LENGTH_SHORT).show();
             }
         });
@@ -172,6 +175,7 @@ public class Synchronizer {
                 if (response.isSuccessful()) {
                     List<YearPlanApi> yearPlansApi = response.body();
                     synchronizeYearPlans(yearPlansApi);
+                    Log.d("test:","dotarlem");
                 } else {
                     Toast.makeText(activity, activity.getString(R.string.sync_errorYearPlanApi), Toast.LENGTH_SHORT).show();
                     sendMessageSync(6);
@@ -187,14 +191,14 @@ public class Synchronizer {
         });
     }
 
-    private void getOperatorsApi(int yearPlanApiId) {
-        Call<List<OperatorApi>> getOperatorApis = service.getOperators(token, yearPlanApiId);
+    private void getOperatorsApi() {
+        Call<List<OperatorApi>> getOperatorApis = service.getOperators(token);
         getOperatorApis.enqueue(new Callback<List<OperatorApi>>() {
             @Override
             public void onResponse(@NotNull Call<List<OperatorApi>> call, @NotNull Response<List<OperatorApi>> response) {
                 if (response.isSuccessful()) {
                     List<OperatorApi> operatorApis = response.body();
-                    synchronizeOperators(operatorApis, yearPlanApiId);
+                    synchronizeOperators(operatorApis);
                 } else {
                     Toast.makeText(activity, activity.getString(R.string.sync_errorOperatorApi), Toast.LENGTH_SHORT).show();
                     sendMessageSync(6);
@@ -210,14 +214,14 @@ public class Synchronizer {
         });
     }
 
-    private void getFieldsApi(int yearPlanApiId) {
-        Call<List<FieldApi>> getFieldApis = service.getFields(token, yearPlanApiId);
+    private void getFieldsApi() {
+        Call<List<FieldApi>> getFieldApis = service.getFields(token);
         getFieldApis.enqueue(new Callback<List<FieldApi>>() {
             @Override
             public void onResponse(@NotNull Call<List<FieldApi>> call, @NotNull Response<List<FieldApi>> response) {
                 if (response.isSuccessful()) {
                     List<FieldApi> fieldsApi = response.body();
-                    synchronizeFields(fieldsApi, yearPlanApiId);
+                    synchronizeFields(fieldsApi);
                 } else {
                     Toast.makeText(activity, activity.getString(R.string.sync_errorFieldApi), Toast.LENGTH_SHORT).show();
                     sendMessageSync(6);
@@ -233,14 +237,14 @@ public class Synchronizer {
         });
     }
 
-    private void getParcelsApi(Integer yearPlanApiId) {
-        Call<List<ParcelApi>> getParcelApis = service.getParcels(token, yearPlanApiId);
+    private void getParcelsApi() {
+        Call<List<ParcelApi>> getParcelApis = service.getParcels(token);
         getParcelApis.enqueue(new Callback<List<ParcelApi>>() {
             @Override
             public void onResponse(@NotNull Call<List<ParcelApi>> call, @NotNull Response<List<ParcelApi>> response) {
                 if (response.isSuccessful()) {
                     List<ParcelApi> parcelsApi = response.body();
-                    synchronizeParcels(parcelsApi, yearPlanApiId);
+                    synchronizeParcels(parcelsApi);
                 } else {
                     Toast.makeText(activity, activity.getString(R.string.sync_errorParcelApi), Toast.LENGTH_SHORT).show();
                     sendMessageSync(6);
@@ -271,35 +275,33 @@ public class Synchronizer {
         return yearPlanList;
     }
 
-    private List<Operator> operatorsApiToOperators(List<OperatorApi> operatorsApi, int yearPlanId) {
+    private List<Operator> operatorsApiToOperators(List<OperatorApi> operatorsApi) {
         List<Operator> operators = new ArrayList<>();
 
         for (OperatorApi item : operatorsApi) {
-            Operator operator = new Operator(item.getId(), item.getFirstName(), item.getSurname(), yearPlanId);
+            Operator operator = new Operator(item);
             operators.add(operator);
         }
 
         return operators;
     }
 
-    private List<Field> fieldsApiToOperators(List<FieldApi> fieldsApi, int yearPlanId) {
+    private List<Field> fieldsApiToOperators(List<FieldApi> fieldsApi) {
         List<Field> fields = new ArrayList<>();
 
         for (FieldApi item : fieldsApi) {
-            Field field = new Field(item.getId(), item.getName(), yearPlanId, item.getPlant());
+            Field field = new Field(item);
             fields.add(field);
         }
 
         return fields;
     }
 
-    private List<Parcel> parcelsApiToOperators(List<ParcelApi> parcelsApi, int yearPlanId) {
+    private List<Parcel> parcelsApiToOperators(List<ParcelApi> parcelsApi) {
         List<Parcel> parcels = new ArrayList<>();
 
         for (ParcelApi item : parcelsApi) {
-            Parcel parcel = new Parcel(item.getId(), item.getParcelNumber(), item.getCultivatedArea(), item.isFuelApplication(), yearPlanId);
-            parcel.setArimrOperatorId(item.getArimrOperatorId());
-            parcel.setFieldId(item.getFieldId());
+            Parcel parcel = new Parcel(item);
             parcels.add(parcel);
         }
 
@@ -336,9 +338,9 @@ public class Synchronizer {
         thread.start();
     }
 
-    private void synchronizeOperators(List<OperatorApi> operatorsApi, int yearPlanId) {
+    private void synchronizeOperators(List<OperatorApi> operatorsApi) {
         sendRequest++;
-        List<Operator> operators = operatorsApiToOperators(operatorsApi, yearPlanId);
+        List<Operator> operators = operatorsApiToOperators(operatorsApi);
         Thread thread = new Thread(() -> {
             db.operatorDao().insertAll(operators.toArray(new Operator[0]));
             sendMessageSync(3);
@@ -346,9 +348,9 @@ public class Synchronizer {
         thread.start();
     }
 
-    private void synchronizeFields(List<FieldApi> fieldsApi, int yearPlanId) {
+    private void synchronizeFields(List<FieldApi> fieldsApi) {
         sendRequest++;
-        List<Field> fields = fieldsApiToOperators(fieldsApi, yearPlanId);
+        List<Field> fields = fieldsApiToOperators(fieldsApi);
         Thread thread = new Thread(() -> {
             db.fieldDao().insertAll(fields.toArray(new Field[0]));
             sendMessageSync(4);
@@ -356,10 +358,9 @@ public class Synchronizer {
         thread.start();
     }
 
-    private void synchronizeParcels(List<ParcelApi> parcelsApi, int yearPlanId) {
+    private void synchronizeParcels(List<ParcelApi> parcelsApi) {
         sendRequest++;
-        currentYearPlanId = yearPlanId;
-        List<Parcel> parcels = parcelsApiToOperators(parcelsApi, yearPlanId);
+        List<Parcel> parcels = parcelsApiToOperators(parcelsApi);
         Thread thread = new Thread(() -> {
             db.parcelDao().insertAll(parcels.toArray(new Parcel[0]));
             sendMessageSync(5);

@@ -15,35 +15,37 @@ public class FieldApi {
 
     @SerializedName("id")
     private Integer id;
-
     @SerializedName("name")
     private String name;
-
     @SerializedName("plant")
     private Plant plant;
+    @SerializedName("plantVariety")
+    private String plantVariety;
+    @SerializedName("yearPlan")
+    private String yearPlan;
 
     public Integer getId() {
         return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getPlant() {
-        if(plant != null) {
+        if (plant != null) {
             return plant.getPlantName();
         } else {
             return "brak";
         }
 
+    }
+
+    public String getPlantVariety() {
+        return plantVariety;
+    }
+
+    public String getYearPlan() {
+        return yearPlan;
     }
 }

@@ -448,7 +448,7 @@ public class StartTreatmentActivity extends AppCompatActivity {
         new Thread(() -> {
             user = db.userDao().findLogged(true);
             choosenOperator = db.operatorDao().findOperatorById(user.getSelectedOperatorId());
-            sendMessage(1, new Field(0, "brak", user.getSelectedYearPlanId(), "brak"));
+            sendMessage(1, new Field(0, "brak", user.getSelectedYearPlanId(), "brak","brak"));
         }).start();
     }
 

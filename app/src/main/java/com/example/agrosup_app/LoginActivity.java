@@ -110,6 +110,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void printDB() {
         UserWithYearPlans user = db.userDao().userWithYearPlans(1);
+        if(user == null) return;
         for (YearPlan yearPlan : user.yearPlans) {
             Log.d("yearPlanId", yearPlan.getId() + "");
             for (Operator operator : db.yearPlanDao().yearPlanWithOperators(1, yearPlan.getId()).operators) {

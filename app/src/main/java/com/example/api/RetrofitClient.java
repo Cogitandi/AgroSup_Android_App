@@ -28,7 +28,7 @@ public class RetrofitClient {
     private static Retrofit retrofitTrans;
 
     //Define the base URL//
-    private static final String BASE_URL = "https://192.168.1.12:8000/api/";
+    private static final String BASE_URL = "http://farmsup.herokuapp.com/api/";
     private static final String BASE_URLXML = "http://integracja.gugik.gov.pl/cgi-bin/";
     private static final String BASE_URLTrans = "http://epsg.io/";
 

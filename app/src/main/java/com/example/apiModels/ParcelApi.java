@@ -1,7 +1,5 @@
 package com.example.apiModels;
 
-import android.util.Log;
-
 import com.google.gson.annotations.SerializedName;
 
 public class ParcelApi {
@@ -14,9 +12,11 @@ public class ParcelApi {
     @SerializedName("fuelApplication")
     private boolean fuelApplication;
     @SerializedName("ArimrOperator")
-    private String arimrOperatorId;
+    private String arimrOperator;
     @SerializedName("field")
-    private String fieldId;
+    private String field;
+    @SerializedName("yearPlan")
+    private String yearPlan;
 
     public int getId() {
         return id;
@@ -34,11 +34,15 @@ public class ParcelApi {
         return fuelApplication;
     }
 
-    public String getArimrOperatorId() {
-        return arimrOperatorId;
+    public String getArimrOperator() {
+        return arimrOperator;
     }
 
-    public String getFieldId() {
-        return fieldId;
+    public String getField() {
+        return field;
+    }
+
+    public String getYearPlan() {
+        return yearPlan;
     }
 }

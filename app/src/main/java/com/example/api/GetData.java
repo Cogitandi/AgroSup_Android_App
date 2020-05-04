@@ -34,13 +34,13 @@ public interface GetData {
     Call<List<YearPlanApi>> getYearPlans(@Header("authorization") String token);
 
     @GET("fields.json")
-    Call<List<FieldApi>> getFields(@Header("authorization") String token, @Query("yearPlan") Integer id);
+    Call<List<FieldApi>> getFields(@Header("authorization") String token);
 
     @GET("operators.json")
-    Call<List<OperatorApi>> getOperators(@Header("authorization") String token, @Query("yearPlan") Integer id);
+    Call<List<OperatorApi>> getOperators(@Header("authorization") String token);
 
     @GET("parcels.json")
-    Call<List<ParcelApi>> getParcels(@Header("authorization") String token, @Query("yearPlan") Integer id);
+    Call<List<ParcelApi>> getParcels(@Header("authorization") String token);
 
     @GET("KrajowaIntegracjaEwidencjiGruntow?SERVICE=WMS&request=getFeatureInfo&version=1.3.0&layers=powiaty,zsin,obreby,dzialki,geoportal,numery_dzialek,budynki&styles=&crs=EPSG:2180&width=507&height=789&format=image/png&transparent=true&query_layers=powiaty,zsin,obreby,dzialki,geoportal,numery_dzialek,budynki&i=101&j=371&INFO_FORMAT=text/xml")
     Call<FeatureCollection> getParcelEw(@Query("bbox") String bbox);

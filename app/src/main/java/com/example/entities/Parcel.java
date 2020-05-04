@@ -1,8 +1,12 @@
 package com.example.entities;
 
+import android.util.Log;
+
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+
+import com.example.apiModels.ParcelApi;
 
 @Entity
 public class Parcel {
@@ -28,13 +32,26 @@ public class Parcel {
     @ColumnInfo(name = "fieldId")
     private int fieldId;
 
-    public Parcel(int id, String parcelNumber, int cultivatedArea, boolean fuelApplication, int yearPlanId) {
+    public Parcel(int id, String parcelNumber, int cultivatedArea, boolean fuelApplication, int arimrOperatorId, int yearPlanId, int fieldId) {
         this.id = id;
         this.parcelNumber = parcelNumber;
         this.cultivatedArea = cultivatedArea;
         this.fuelApplication = fuelApplication;
+        this.arimrOperatorId = arimrOperatorId;
         this.yearPlanId = yearPlanId;
+        this.fieldId = fieldId;
+    }
 
+    public Parcel(ParcelApi parcelApi) {
+        this.id = parcelApi.getId();
+        this.parcelNumber = parcelApi.getParcelNumber();
+        this.cultivatedArea = parcelApi.getCultivatedArea();
+        this.fuelApplication = parcelApi.isFuelApplication();
+        this.yearPlanId = new Integer(parcelApi.getYearPlan().substring(16));
+        this.fieldId = new Integer(parcelApi.getField().substring(12));
+        setArimrOperatorId(parcelApi.getArimrOperator());
+        Log.d("test", parcelApi.getYearPlan() + "," + yearPlanId);
+        Log.d("test", parcelApi.getField() + "," + fieldId);
     }
 
     public void setArimrOperatorId(String arimrOperatorId) {
@@ -42,14 +59,6 @@ public class Parcel {
             this.arimrOperatorId = new Integer(arimrOperatorId.substring(15));
         } else {
             this.arimrOperatorId = 0;
-        }
-    }
-
-    public void setFieldId(String fieldId) {
-        if (fieldId != null) {
-            this.fieldId = new Integer(fieldId.substring(12));
-        } else {
-            this.fieldId = 0;
         }
     }
 
@@ -79,32 +88,5 @@ public class Parcel {
 
     public int getFieldId() {
         return fieldId;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setParcelNumber(String parcelNumber) {
-        this.parcelNumber = parcelNumber;
-    }
-
-    public void setCultivatedArea(int cultivatedArea) {
-        this.cultivatedArea = cultivatedArea;
-    }
-
-    public void setFuelApplication(boolean fuelApplication) {
-        this.fuelApplication = fuelApplication;
-    }
-    public void setYearPlanId(int yearPlanId) {
-        this.yearPlanId = yearPlanId;
-    }
-
-    public void setArimrOperatorId(int arimrOperatorId) {
-        this.arimrOperatorId = arimrOperatorId;
-    }
-
-    public void setFieldId(int fieldId) {
-        this.fieldId = fieldId;
     }
 }
